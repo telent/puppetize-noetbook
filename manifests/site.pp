@@ -148,6 +148,27 @@ exec { 'install-dotfiles':
   creates=>'/home/dan/.dotfiles-installed'
 }
 
+file {['/home/dan/bin', '/home/dan/src']: 
+  ensure=>directory,
+  owner=>'dan' 
+}
+
+class clojure {
+  fetch {'lein':
+    require=>[File['/home/dan/bin']],
+    url=>'https://raw.github.com/technomancy/leiningen/stable/bin/lein',
+    cwd=>'/home/dan/bin'
+  }
+
+  file {'/home/dan/bin/lein':
+    require=>[File['/home/dan/bin'],Fetch['lein']],
+    owner=>dan,
+    mode=>0755
+  }
+  package {'default-jdk': }
+}
+include clojure
+
 
 # todo:
 # 1) map caps lock as control
