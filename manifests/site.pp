@@ -31,11 +31,6 @@ define gitrepo($repo, $parentdirectory, $username='root', $branch='master') {
 file {'/etc/network/interfaces':
   source=>'puppet:///files/etc/network/interfaces'
 }
-file {'/etc/X11/xorg.conf.d':
-  ensure=>directory,
-  recurse=>true,
-  source=>'puppet:///files/etc/X11/xorg.conf.d'
-}
 
 package {'curl':}
 class sudo {
@@ -62,9 +57,47 @@ class emacs {
 include emacs
 
 class xorg {
-  package {['xorg', 'xorg-dev', 'xserver-xorg-video-intel', 'xfce4-session', 'sawfish', 'lightdm','menu', 'xfce4-power-manager']:}
+  package {['xorg', 'xorg-dev', 'xserver-xorg-video-intel', 'xfce4-session', 'sawfish', 'sawfish-lisp-source', 'lightdm','menu', 'xfce4-power-manager']:}
   service {'lightdm':
     enable=>true
+  }
+  file {'/etc/X11/xorg.conf.d':
+    ensure=>directory,
+    recurse=>true,
+    owner=>root,
+    source=>'puppet:///files/etc/X11/xorg.conf.d'
+  }
+
+# http://software.clapper.org/cheat-sheets/xfce.html
+  file {'/home/dan/.config/autostart/caps-lock-is-ctrl.desktop':
+    owner=>'dan',
+    content=>"[Desktop Entry]
+Encoding=UTF-8
+Version=0.9.4
+Type=Application
+Name=Caps Lock -> Control
+Comment=Make Caps Lock a second Ctrl key
+Exec=/usr/bin/setxkbmap -option 'ctrl:nocaps'
+StartupNotify=false
+Terminal=false
+Hidden=false
+
+"
+  }
+  file {'/home/dan/.config/autostart/xrdb.desktop':
+    owner=>'dan',
+    content=>"[Desktop Entry]
+Encoding=UTF-8
+Version=0.9.4
+Type=Application
+Name=xrdb
+Comment=Load Xrdb defaults
+Exec=/usr/bin/xrdb .Xdefaults
+StartupNotify=false
+Terminal=false
+Hidden=false
+
+"
   }
 }
 include xorg
