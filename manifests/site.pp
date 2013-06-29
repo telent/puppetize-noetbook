@@ -170,7 +170,3 @@ class clojure {
 include clojure
 
 
-# todo:
-# 1) map caps lock as control
-# 2) install dotfiles
-
