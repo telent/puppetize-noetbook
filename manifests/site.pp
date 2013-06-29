@@ -9,6 +9,25 @@ define fetch($url,$cwd) {
     creates=>"$cwd/$name"
   }
 }
+
+define gitrepo($repo, $parentdirectory, $username='root', $branch='master') {
+  exec {"gitrepo/$title/clone":
+    require=>[Package['git']],
+    cwd=>$parentdirectory,
+    creates=>"$parentdirectory/$title/.git",
+    command=>"/usr/bin/git clone --branch=$branch $repo $parentdirectory/$title",
+    user=>$username,
+  }
+  exec {"gitrepo/$title/pull":
+    user=>$username,
+    require=>Exec["gitrepo/$title/clone"],
+    cwd=>"$parentdirectory/$title",
+    command=>"/bin/su -l -c \"cd $parentdirectory/$title ; /usr/bin/git pull \" $username ",
+    onlyif=>"/bin/su -l -c \"cd $parentdirectory/$title ; ( git remote update ; git status -uno ) |grep behind \" $username ",
+  }
+}
+
+
 file {'/etc/network/interfaces':
   source=>'puppet:///files/etc/network/interfaces'
 }
@@ -83,8 +102,19 @@ class firefox {
     target => '/usr/local/lib/firefox/firefox',
   }
 }
-
 include firefox
+
+gitrepo { 'dotfiles':
+  repo=> 'https://github.com/telent/dotfiles',
+  parentdirectory=>'/home/dan/',
+  username=>'dan'
+}
+exec { 'install-dotfiles':
+  subscribe=>Gitrepo['dotfiles'],
+  command=>'/usr/bin/make -C /home/dan/dotfiles',
+  creates=>'/home/dan/.dotfiles-installed'
+}
+
 
 # todo:
 # 1) map caps lock as control
