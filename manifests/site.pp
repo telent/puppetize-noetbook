@@ -29,7 +29,13 @@ define gitrepo($repo, $parentdirectory, $username='root', $branch='master') {
 
 
 file {'/etc/network/interfaces':
-  source=>'puppet:///files/etc/network/interfaces'
+  source=>'puppet:///files/etc/network/interfaces',
+  owner=>root,
+}
+file {'/etc/wpa_supplicant.conf':
+  source=>'puppet:///files/etc/wpa_supplicant.conf',
+  owner=>root,
+  replace=>false
 }
 
 package {'curl':}
