@@ -30,7 +30,9 @@ define gitrepo($repo, $parentdirectory, $username='root', $branch='master') {
 
 file {'/etc/network/interfaces':
   source=>'puppet:///files/etc/network/interfaces',
+  group=>root,
   owner=>root,
+  mode=>0644
 }
 file {'/etc/wpa_supplicant.conf':
   source=>'puppet:///files/etc/wpa_supplicant.conf',
