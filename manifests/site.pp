@@ -167,7 +167,7 @@ class clojure {
     url=>'https://raw.github.com/technomancy/leiningen/stable/bin/lein',
     cwd=>'/home/dan/bin'
   }
-
+  package {'unzip': } # to unzip JAR file scontaining source code
   file {'/home/dan/bin/lein':
     require=>[File['/home/dan/bin'],Fetch['lein']],
     owner=>dan,
