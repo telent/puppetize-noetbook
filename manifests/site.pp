@@ -111,29 +111,59 @@ Hidden=false
 include xorg
 
 class diagnostic {
-  package {['lshw','sysstat','powertop']: }
+  package {['lshw','sysstat','powertop','mbr','nmap','wireshark', 'iftop']: }
 }
 include diagnostic
 
 class laptop {
-  package {['pm-utils']: }
+  package {['pm-utils']:
+  }
 }
 include laptop
 
+class ssd {
+  package {['smartmontools']: }
+  file {'/etc/udev/rules.d/60-io-scheduler.rules':
+    # from pixelchaos.net
+    content=>'# puppet
+ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="0",
+ATTR{queue/scheduler}="noop"
+'
+  }
+}
+include ssd
+
+
 class dev {
-  package {['strace', 'git','gcc','build-essential','make']:
+  package {['strace', 'git','gcc','build-essential','make', 'kernel-package',
+            'bc' # strange but true: kernel compilation needs this
+            ]:
   }
 }
 include dev
 
-package {'midori': ensure=>installed }
+class ssh {
+  package {['openssh-server']: }
+  service {'ssh':
+    enable=>true, ensure=>running
+  }
+}
+include ssh
+
+class lxc {
+  package {['lxc','bridge-utils', 'libvirt-bin', 'debootstrap']:}
+}
+include lxc
+
+package {['units','xpdf','midori']: ensure=>installed }
 
 class firefox {
   fetch { 'firefox.tar.bz2':
-    url=> 'http://releases.mozilla.org/pub/mozilla.org/firefox/releases/latest/linux-x86_64/en-GB/firefox-22.0.tar.bz2',
+    url=> 'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/latest/linux-x86_64/en-GB/firefox-24.0.tar.bz2',
     cwd=>'/tmp'
   }
   exec { 'firefox:install':
+    subscribe => Fetch['firefox.tar.bz2'],                     
     cwd=>'/usr/local/lib/',
     command=>'/bin/tar xf /tmp/firefox.tar.bz2',
     creates=>'/usr/local/lib/firefox/firefox',
@@ -145,6 +175,28 @@ class firefox {
 }
 include firefox
 
+class media {
+  package {'mplayer': }
+}
+include media
+
+class android {
+  fetch {'android-sdk.tgz':
+    url=>'http://dl.google.com/android/android-sdk_r22.0.5-linux.tgz',
+    cwd=>'/tmp'
+  }
+  exec { 'android:install':
+    require=>Fetch['android-sdk.tgz'],
+    cwd=>'/usr/local/lib/',
+    command=>'/bin/tar xf /tmp/android-sdk.tgz && /bin/chmod -R go+rwX /usr/local/lib/android-sdk-linux/',
+    creates=>'/usr/local/lib/android-sdk-linux/tools/android',
+  }
+  file {'/etc/profile.d/android.sh':
+    mode=>0755,
+    content=>"#!/bin/sh\nPATH=/usr/local/lib/android-sdk-linux/tools/:/usr/local/lib/android-sdk-linux/platform-tools/:\$PATH\n"
+  }
+}
+
 gitrepo { 'dotfiles':
   repo=> 'https://github.com/telent/dotfiles',
   parentdirectory=>'/home/dan/',
@@ -155,6 +207,7 @@ exec { 'install-dotfiles':
   command=>'/usr/bin/make -C /home/dan/dotfiles',
   creates=>'/home/dan/.dotfiles-installed'
 }
+include android
 
 file {['/home/dan/bin', '/home/dan/src']: 
   ensure=>directory,
@@ -178,3 +231,4 @@ class clojure {
 include clojure
 
 
+package {'xtightvncviewer':}
