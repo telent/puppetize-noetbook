@@ -176,6 +176,34 @@ class firefox {
 }
 include firefox
 
+class ruby {
+  fetch {'chruby.tar.gz':
+   url => 'https://github.com/postmodern/chruby/archive/v0.3.7.tar.gz',
+   cwd => '/usr/local/src',
+  }
+  exec { 'chruby:install':
+    subscribe => Fetch['chruby.tar.gz'],
+    cwd=>'/usr/local/src/',
+    command=>'/bin/tar xzf chruby.tar.gz && make -C chruby-0.3.7 install',
+    creates=>'/usr/local/share/chruby/chruby.sh',
+  }
+  file { '/etc/profile.d/chruby.sh':
+    mode=>0755,
+    content=>"source /usr/local/share/chruby/chruby.sh\n"
+  }
+  fetch {'ruby-install.tar.gz':
+   url => 'https://github.com/postmodern/ruby-install/archive/v0.3.0.tar.gz',
+   cwd => '/usr/local/src',
+  }
+  exec { 'ruby-install:install':
+    subscribe => Fetch['ruby-install.tar.gz'],      
+    cwd=>'/usr/local/src/',
+    command=>'/bin/tar xzf ruby-install.tar.gz && make -C ruby-install-0.3.0 install',
+    creates=>'/usr/local/bin/ruby-install',
+  }
+}
+include ruby
+
 class media {
   package {'mplayer': }
 }
