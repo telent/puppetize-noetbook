@@ -111,7 +111,8 @@ Hidden=false
 include xorg
 
 class diagnostic {
-  package {['lshw','sysstat','powertop','mbr','nmap','wireshark', 'iftop']: }
+  package {['lshw','sysstat','powertop','mbr','nmap','wireshark',
+  'xdiskusage', 'iftop']: }
 }
 include diagnostic
 
