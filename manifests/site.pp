@@ -261,5 +261,6 @@ class clojure {
 }
 include clojure
 
+package {'cups': }
 
 package {'xtightvncviewer':}
