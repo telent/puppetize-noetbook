@@ -5,7 +5,7 @@ define fetch($url,$cwd) {
   exec{"fetch-$title": 
     command=>"/usr/bin/curl -L \"$url\" -o $name",
     cwd=>$cwd,
-    require=>Package['curl'],
+    require=>[File[$cwd],Package['curl']],
     creates=>"$cwd/$name"
   }
 }
@@ -27,7 +27,9 @@ define gitrepo($repo, $parentdirectory, $username='root', $branch='master') {
   }
 }
 
-
+file {'/usr/local/tarballs':
+  ensure=>directory
+}
 file {'/etc/network/interfaces':
   source=>'puppet:///files/etc/network/interfaces',
   group=>root,
@@ -50,12 +52,12 @@ include sudo
 class emacs {
   fetch { 'emacs.tar.xz':
     url=> 'http://ftpmirror.gnu.org/emacs/emacs-24.3.tar.xz',
-    cwd=>'/tmp'
+    cwd=>'/usr/local/tarballs'
   }
   file { '/usr/local/src/emacs': ensure=>directory }
   exec { 'emacs:build':
     cwd=>'/usr/local/src/emacs',
-    command=>'/bin/tar xf /tmp/emacs.tar.xz && cd emacs-24.3 && ./configure && make && make install',
+    command=>'/bin/tar xf /usr/local/tarballs/emacs.tar.xz && cd emacs-24.3 && ./configure && make && make install',
     creates=>'/usr/local/bin/emacs',
     require=>[Package['xorg-dev'] , File['/usr/local/src/emacs'], Fetch['emacs.tar.xz']],
   }
@@ -161,12 +163,12 @@ package {['units','xpdf','midori']: ensure=>installed }
 class firefox {
   fetch { 'firefox.tar.bz2':
     url=> 'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/latest/linux-x86_64/en-GB/firefox-24.0.tar.bz2',
-    cwd=>'/tmp'
+    cwd=>'/usr/local/tarballs'
   }
   exec { 'firefox:install':
     subscribe => Fetch['firefox.tar.bz2'],                     
     cwd=>'/usr/local/lib/',
-    command=>'/bin/tar xf /tmp/firefox.tar.bz2',
+    command=>'/bin/tar xf /usr/local/tarballs/firefox.tar.bz2',
     creates=>'/usr/local/lib/firefox/firefox',
   }
   file {'/usr/local/bin/firefox':
@@ -179,12 +181,12 @@ include firefox
 class ruby {
   fetch {'chruby.tar.gz':
    url => 'https://github.com/postmodern/chruby/archive/v0.3.7.tar.gz',
-   cwd => '/usr/local/src',
+   cwd => '/usr/local/tarballs',
   }
   exec { 'chruby:install':
     subscribe => Fetch['chruby.tar.gz'],
     cwd=>'/usr/local/src/',
-    command=>'/bin/tar xzf chruby.tar.gz && make -C chruby-0.3.7 install',
+    command=>'/bin/tar xzf ../tarballs/chruby.tar.gz && make -C chruby-0.3.7 install',
     creates=>'/usr/local/share/chruby/chruby.sh',
   }
   file { '/etc/profile.d/chruby.sh':
@@ -193,12 +195,12 @@ class ruby {
   }
   fetch {'ruby-install.tar.gz':
    url => 'https://github.com/postmodern/ruby-install/archive/v0.3.0.tar.gz',
-   cwd => '/usr/local/src',
+   cwd => '/usr/local/tarballs',
   }
   exec { 'ruby-install:install':
     subscribe => Fetch['ruby-install.tar.gz'],      
     cwd=>'/usr/local/src/',
-    command=>'/bin/tar xzf ruby-install.tar.gz && make -C ruby-install-0.3.0 install',
+    command=>'/bin/tar xzf ../tarballs/ruby-install.tar.gz && make -C ruby-install-0.3.0 install',
     creates=>'/usr/local/bin/ruby-install',
   }
 }
@@ -212,12 +214,12 @@ include media
 class android {
   fetch {'android-sdk.tgz':
     url=>'http://dl.google.com/android/android-sdk_r22.0.5-linux.tgz',
-    cwd=>'/tmp'
+    cwd=>'/usr/local/tarballs'
   }
   exec { 'android:install':
     require=>Fetch['android-sdk.tgz'],
     cwd=>'/usr/local/lib/',
-    command=>'/bin/tar xf /tmp/android-sdk.tgz && /bin/chmod -R go+rwX /usr/local/lib/android-sdk-linux/',
+    command=>'/bin/tar xf /usr/local/tarballs/android-sdk.tgz && /bin/chmod -R go+rwX /usr/local/lib/android-sdk-linux/',
     creates=>'/usr/local/lib/android-sdk-linux/tools/android',
   }
   file {'/etc/profile.d/android.sh':
