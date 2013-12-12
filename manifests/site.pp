@@ -264,3 +264,5 @@ include clojure
 package {'cups': }
 
 package {'xtightvncviewer':}
+package {'nvi': }
+package {'less': }
