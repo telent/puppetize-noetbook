@@ -235,7 +235,7 @@ gitrepo { 'dotfiles':
 }
 exec { 'install-dotfiles':
   subscribe=>Gitrepo['dotfiles'],
-  command=>'/usr/bin/make -C /home/dan/dotfiles',
+  command=>'/bin/su -l dan -c "/usr/bin/make -C /home/dan/dotfiles"',
   creates=>'/home/dan/.dotfiles-installed'
 }
 include android
