@@ -161,7 +161,7 @@ include lxc
 
 class firefox {
   fetch { 'firefox.tar.bz2':
-    url=> 'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/latest/linux-x86_64/en-GB/firefox-25.0.1.tar.bz2',
+    url=> 'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/26.0/linux-x86_64/en-GB/firefox-26.0.tar.bz2',
     cwd=>'/usr/local/tarballs'
   }
   exec { 'firefox:install':
@@ -234,7 +234,7 @@ gitrepo { 'dotfiles':
 }
 exec { 'install-dotfiles':
   subscribe=>Gitrepo['dotfiles'],
-  command=>'/usr/bin/make -C /home/dan/dotfiles',
+  command=>'/bin/su -l dan -c "/usr/bin/make -C /home/dan/dotfiles"',
   creates=>'/home/dan/.dotfiles-installed'
 }
 include android
@@ -267,6 +267,8 @@ package {['cups',
           'curl',
           'whois',
 	  'irssi',
+	  'nvi',
+	  'less',
           'midori']:
             ensure=>installed
 }

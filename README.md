@@ -15,9 +15,9 @@ might find some but not all of it useful
 
 These steps are approximate and have not _actually_ been tested.
 
-1. Install Debian 7.1.0.  Deselect all the task groups to get a minimal system
-1. `apt-get install git puppet`
-1. `cd /etc && mv puppet oldpuppet && git clone git@github.com:telent/puppetize-noetbook.git puppet`
+1. Install Debian 7.1.0.  Deselect all the task groups to get a minimal system.  Maybe you can do this with `sudo debootstrap  --include=git,puppet,ssh --variant=minbase jessie /newroot http://localhost:3142/ftp.debian.org/debian/`
+1. `apt-get install git puppet ssh ca-certificates`
+1. `cd /etc && mv puppet oldpuppet && git clone https://github.com:telent/puppetize-noetbook.git puppet`
 1. `puppet apply /etc/puppet/manifests/site.pp`
 
 
