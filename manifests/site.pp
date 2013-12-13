@@ -161,7 +161,7 @@ include lxc
 
 class firefox {
   fetch { 'firefox.tar.bz2':
-    url=> 'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/latest/linux-x86_64/en-GB/firefox-24.0.tar.bz2',
+    url=> 'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/latest/linux-x86_64/en-GB/firefox-25.0.1.tar.bz2',
     cwd=>'/usr/local/tarballs'
   }
   exec { 'firefox:install':
