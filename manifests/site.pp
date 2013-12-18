@@ -193,14 +193,15 @@ class ruby {
     content=>"source /usr/local/share/chruby/chruby.sh\n"
   }
   fetch {'ruby-install.tar.gz':
-   url => 'https://github.com/postmodern/ruby-install/archive/v0.3.0.tar.gz',
+   url => 'https://github.com/postmodern/ruby-install/archive/v0.3.3.tar.gz',
    cwd => '/usr/local/tarballs',
   }
   exec { 'ruby-install:install':
     subscribe => Fetch['ruby-install.tar.gz'],      
     cwd=>'/usr/local/src/',
-    command=>'/bin/tar xzf ../tarballs/ruby-install.tar.gz && make -C ruby-install-0.3.0 install',
-    creates=>'/usr/local/bin/ruby-install',
+    command=>'/bin/tar xzf ../tarballs/ruby-install.tar.gz && make -C ruby-install-0.3.3 install',
+    refreshonly=>true,
+#    creates=>'/usr/local/bin/ruby-install',
   }
 }
 include ruby
