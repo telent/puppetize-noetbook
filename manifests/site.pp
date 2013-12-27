@@ -42,7 +42,7 @@ file {'/etc/wpa_supplicant.conf':
   replace=>false
 }
 
-package {'curl':}
+package {['curl', 'rsync']:}
 class sudo {
   package {'sudo': }
   user {'dan': groups=>['sudo'] }
@@ -158,7 +158,7 @@ class lxc {
 }
 include lxc
 
-package {['units','xpdf','midori']: ensure=>installed }
+package {['tmux','units','xpdf','midori']: ensure=>installed }
 
 class firefox {
   fetch { 'firefox.tar.bz2':
