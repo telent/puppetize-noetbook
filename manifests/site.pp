@@ -43,6 +43,7 @@ file {'/etc/wpa_supplicant.conf':
 }
 
 package {['curl', 'rsync']:}
+
 class sudo {
   package {'sudo': }
   user {'dan': groups=>['sudo'] }
@@ -114,7 +115,7 @@ include xorg
 
 class diagnostic {
   package {['lshw','sysstat','powertop','mbr','nmap','wireshark',
-  'xdiskusage', 'iftop']: }
+            'xdiskusage', 'iftop']: }
 }
 include diagnostic
 
@@ -246,6 +247,7 @@ file {['/home/dan/bin', '/home/dan/src']:
 }
 
 class clojure {
+  package {'openjdk-7-jdk': }
   fetch {'lein':
     require=>[File['/home/dan/bin']],
     url=>'https://raw.github.com/technomancy/leiningen/stable/bin/lein',
@@ -257,12 +259,18 @@ class clojure {
     owner=>dan,
     mode=>0755
   }
-  package {'default-jdk': }
 }
 include clojure
 
-package {'cups': }
-
-package {'xtightvncviewer':}
-package {'nvi': }
-package {'less': }
+package {['cups', 
+	  'xtightvncviewer',
+          'units',
+          'xpdf',
+          'curl',
+          'whois',
+	  'irssi',
+	  'nvi',
+	  'less',
+          'midori']:
+            ensure=>installed
+}
