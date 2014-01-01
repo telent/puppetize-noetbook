@@ -76,38 +76,6 @@ class xorg {
     owner=>root,
     source=>'puppet:///files/etc/X11/xorg.conf.d'
   }
-
-# http://software.clapper.org/cheat-sheets/xfce.html
-  file {'/home/dan/.config/autostart/caps-lock-is-ctrl.desktop':
-    owner=>'dan',
-    content=>"[Desktop Entry]
-Encoding=UTF-8
-Version=0.9.4
-Type=Application
-Name=Caps Lock -> Control
-Comment=Make Caps Lock a second Ctrl key
-Exec=/usr/bin/setxkbmap -option 'ctrl:nocaps'
-StartupNotify=false
-Terminal=false
-Hidden=false
-
-"
-  }
-  file {'/home/dan/.config/autostart/xrdb.desktop':
-    owner=>'dan',
-    content=>"[Desktop Entry]
-Encoding=UTF-8
-Version=0.9.4
-Type=Application
-Name=xrdb
-Comment=Load Xrdb defaults
-Exec=/usr/bin/xrdb .Xdefaults
-StartupNotify=false
-Terminal=false
-Hidden=false
-
-"
-  }
 }
 include xorg
 
