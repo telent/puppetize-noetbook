@@ -205,23 +205,18 @@ exec { 'install-dotfiles':
   creates=>'/home/dan/.dotfiles-installed'
 }
 include android
-
-file {['/home/dan/bin', '/home/dan/src']: 
-  ensure=>directory,
-  owner=>'dan' 
+file {'/usr/local/bin':
+  ensure=>directory
 }
-
 class clojure {
   package {'openjdk-7-jdk': }
   fetch {'lein':
-    require=>[File['/home/dan/bin']],
     url=>'https://raw.github.com/technomancy/leiningen/stable/bin/lein',
-    cwd=>'/home/dan/bin'
+    cwd=>'/usr/local/bin'
   }
   package {'unzip': } # to unzip JAR file scontaining source code
-  file {'/home/dan/bin/lein':
-    require=>[File['/home/dan/bin'],Fetch['lein']],
-    owner=>dan,
+  file {'/usr/local/bin/lein':
+    require=>[Fetch['lein']],
     mode=>0755
   }
 }
