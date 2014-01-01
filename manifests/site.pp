@@ -42,8 +42,6 @@ file {'/etc/wpa_supplicant.conf':
   replace=>false
 }
 
-package {['curl', 'rsync']:}
-
 class sudo {
   package {'sudo': }
   user {'dan': groups=>['sudo'] }
@@ -126,8 +124,6 @@ class lxc {
   package {['lxc','bridge-utils', 'libvirt-bin', 'debootstrap']:}
 }
 include lxc
-
-package {['tmux','units','xpdf','midori']: ensure=>installed }
 
 class firefox {
   fetch { 'firefox.tar.bz2':
@@ -231,7 +227,8 @@ class clojure {
 }
 include clojure
 
-package {['cups', 
+package {['cups',
+	  'tmux',	 
 	  'xtightvncviewer',
           'units',
           'xpdf',
@@ -240,6 +237,7 @@ package {['cups',
 	  'irssi',
 	  'nvi',
 	  'less',
+          'rsync',
           'midori']:
             ensure=>installed
 }
