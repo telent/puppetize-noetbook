@@ -42,11 +42,7 @@ file {'/etc/wpa_supplicant.conf':
   replace=>false
 }
 
-class sudo {
-  package {'sudo': }
-  user {'dan': groups=>['sudo'] }
-}
-include sudo
+package {'sudo': }
 
 class emacs {
   fetch { 'emacs.tar.xz':
@@ -193,18 +189,26 @@ class android {
     content=>"#!/bin/sh\nPATH=/usr/local/lib/android-sdk-linux/tools/:/usr/local/lib/android-sdk-linux/platform-tools/:\$PATH\n"
   }
 }
-
-gitrepo { 'dotfiles':
-  repo=> 'https://github.com/telent/dotfiles',
-  parentdirectory=>'/home/dan/',
-  username=>'dan'
-}
-exec { 'install-dotfiles':
-  subscribe=>Gitrepo['dotfiles'],
-  command=>'/bin/su -l dan -c "/usr/bin/make -C /home/dan/dotfiles"',
-  creates=>'/home/dan/.dotfiles-installed'
-}
 include android
+
+class dan {
+  user {'dan':
+    require=>Package['sudo'],
+    groups=>['sudo']
+  }
+  gitrepo { 'dotfiles':
+    repo=> 'https://github.com/telent/dotfiles',
+    parentdirectory=>'/home/dan/',
+    username=>'dan'
+  }
+  exec { 'install-dotfiles':
+    subscribe=>Gitrepo['dotfiles'],
+    command=>'/bin/su -l dan -c "/usr/bin/make -C /home/dan/dotfiles"',
+    creates=>'/home/dan/.dotfiles-installed'
+  }
+}
+include dan
+
 file {'/usr/local/bin':
   ensure=>directory
 }
