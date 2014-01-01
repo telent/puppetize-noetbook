@@ -109,7 +109,7 @@ class dev {
 include dev
 
 class ssh {
-  package {['openssh-server']: }
+  package {['openssh-server','mosh']: }
   service {'ssh':
     enable=>true, ensure=>running
   }
