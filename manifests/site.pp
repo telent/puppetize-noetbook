@@ -256,5 +256,19 @@ node 'noetbook' {
 node 'lsip' {
   include githost
   include mediaserver
+  file {'/raid': ensure=>directory }
+  mount {'/raid':
+    require=>File['/raid'],
+    ensure=>mounted,
+    atboot=>true,
+    device=>'LABEL=RAID',
+    fstype=>'ext4'
+  }
+    
+  package {'linux-image-amd64': }
+  package {'watchdog': }
+  service {'watchdog':
+    enable=>true, ensure=>running
+  }
+    
 }
-  
