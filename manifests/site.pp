@@ -240,3 +240,18 @@ package {['cups',
           'midori']:
             ensure=>installed
 }
+
+class githost {
+  file {'/home/git': ensure=>directory}
+}
+
+class mediaserver {
+  package {'mediatomb': }
+}
+
+
+node 'lsip' {
+  include githost
+  include mediaserver
+}
+  
