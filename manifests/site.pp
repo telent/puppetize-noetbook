@@ -59,7 +59,6 @@ class emacs {
   package {['libgif-dev', 'libncurses5-dev', 'libjpeg8-dev', 
             'libpng12-dev', 'libtiff5-dev']: }
 }
-include emacs
 
 class xorg {
   package {['xorg', 'xorg-dev', 'xserver-xorg-video-intel', 'xfce4-session', 'sawfish', 'sawfish-lisp-source', 'lightdm','menu', 'xfce4-power-manager']:}
@@ -73,19 +72,16 @@ class xorg {
     source=>'puppet:///files/etc/X11/xorg.conf.d'
   }
 }
-include xorg
 
 class diagnostic {
   package {['lshw','sysstat','powertop','mbr','nmap','wireshark',
             'xdiskusage', 'iftop']: }
 }
-include diagnostic
 
 class laptop {
   package {['pm-utils']:
   }
 }
-include laptop
 
 class ssd {
   package {['smartmontools']: }
@@ -97,8 +93,6 @@ ATTR{queue/scheduler}="noop"
 '
   }
 }
-include ssd
-
 
 class dev {
   package {['strace', 'git','gcc','build-essential','make', 'kernel-package',
@@ -106,7 +100,6 @@ class dev {
             ]:
   }
 }
-include dev
 
 class ssh {
   package {['openssh-server','mosh']: }
@@ -114,12 +107,10 @@ class ssh {
     enable=>true, ensure=>running
   }
 }
-include ssh
 
 class lxc {
   package {['lxc','bridge-utils', 'libvirt-bin', 'debootstrap']:}
 }
-include lxc
 
 class firefox {
   fetch { 'firefox.tar.bz2':
@@ -137,7 +128,6 @@ class firefox {
     target => '/usr/local/lib/firefox/firefox',
   }
 }
-include firefox
 
 class ruby {
   fetch {'chruby.tar.gz':
@@ -166,12 +156,10 @@ class ruby {
 #    creates=>'/usr/local/bin/ruby-install',
   }
 }
-include ruby
 
 class media {
   package {'mplayer': }
 }
-include media
 
 class android {
   fetch {'android-sdk.tgz':
@@ -189,7 +177,6 @@ class android {
     content=>"#!/bin/sh\nPATH=/usr/local/lib/android-sdk-linux/tools/:/usr/local/lib/android-sdk-linux/platform-tools/:\$PATH\n"
   }
 }
-include android
 
 class dan {
   user {'dan':
@@ -207,7 +194,6 @@ class dan {
     creates=>'/home/dan/.dotfiles-installed'
   }
 }
-include dan
 
 file {'/usr/local/bin':
   ensure=>directory
@@ -224,7 +210,6 @@ class clojure {
     mode=>0755
   }
 }
-include clojure
 
 package {['cups',
 	  'tmux',	 
@@ -236,8 +221,7 @@ package {['cups',
 	  'irssi',
 	  'nvi',
 	  'less',
-          'rsync',
-          'midori']:
+          'rsync',]:
             ensure=>installed
 }
 
@@ -249,6 +233,25 @@ class mediaserver {
   package {'mediatomb': }
 }
 
+node default {
+  include emacs
+  include diagnostic
+  include dev
+  include ssh
+  include lxc
+  include ruby
+  include media
+  include android
+  include dan
+  include clojure
+}
+
+node 'noetbook' {
+  include xorg
+  include laptop
+  include ssd
+  include firefox
+}
 
 node 'lsip' {
   include githost
