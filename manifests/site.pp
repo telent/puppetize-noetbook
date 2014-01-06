@@ -295,6 +295,15 @@ node 'lsip' {
     device=>'/dev/disk/by-label/RAID',
     fstype=>'ext4'
   }
+  file {'/boot': ensure=>directory }
+  mount {'/boot':
+    ensure=>mounted,
+    atboot=>true,
+    device=>'/dev/disk/by-label/BOOT',
+    fstype=>'ext4',
+    options=>'defaults',
+    before=>Package['extlinux','linux-image-amd64']
+  } 
     
   package {'linux-image-amd64': }
   package {'watchdog': }
