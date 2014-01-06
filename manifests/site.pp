@@ -278,6 +278,35 @@ node 'noetbook' {
   include wlan0
 }
 
+class kernel($version) {
+  package {"linux-image-$version": }
+  package {'extlinux': }
+  
+  file {'/etc/default/extlinux': 
+    content=>'EXTLINUX_UPDATE="false"
+'
+  }
+  file {'/boot/syslinux.cfg':
+    require=>Mount['/boot'],
+    content=>"# PVPPET ME FACIT
+DEFAULT l0
+
+label l0
+        menu label Debian GNU/Linux, kernel $version
+        linux vmlinuz-$version
+        append initrd=initrd.img-$version ro root=LABEL=ROOT
+
+label l0r
+        menu label Debian GNU/Linux, kernel $version (recovery mode)
+        linux vmlinuz-$version
+        append initrd=initrd.img-$version ro single root=LABEL=ROOT
+        text help
+   This option boots the system into recovery mode (single-user)
+        endtext
+ "
+  }
+}  
+
 node 'lsip' {
   include telent
   include xorglibs
@@ -300,6 +329,12 @@ node 'lsip' {
     device=>'/dev/disk/by-label/RAID',
     fstype=>'ext4'
   }
+
+  class { 'kernel':
+    require => Mount['/boot'],
+    version => '3.12-1-amd64'
+  }
+
   file {'/boot': ensure=>directory }
   mount {'/boot':
     ensure=>mounted,
@@ -307,9 +342,8 @@ node 'lsip' {
     device=>'/dev/disk/by-label/BOOT',
     fstype=>'ext4',
     options=>'defaults',
-    before=>Package['extlinux','linux-image-amd64']
   } 
-    
+   
   mount {'/home/':
     require=>Mount['/raid'],
     ensure=>mounted,
@@ -320,7 +354,6 @@ node 'lsip' {
     before=>User['dan']
   }
 
-  package {'linux-image-amd64': }
   package {'watchdog': }
   service {'watchdog':
     enable=>true, ensure=>running
