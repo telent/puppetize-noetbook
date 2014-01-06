@@ -30,17 +30,28 @@ define gitrepo($repo, $parentdirectory, $username='root', $branch='master') {
 file {'/usr/local/tarballs':
   ensure=>directory
 }
-file {'/etc/network/interfaces':
-  source=>'puppet:///files/etc/network/interfaces',
-  group=>root,
-  owner=>root,
-  mode=>0644
+class wlan0 {
+  file {'/etc/network/interfaces':
+    source=>'puppet:///files/etc/network/interfaces.wlan0',
+    group=>root,
+    owner=>root,
+    mode=>0644
+  }
+  file {'/etc/wpa_supplicant.conf':
+    source=>'puppet:///files/etc/wpa_supplicant.conf',
+    owner=>root,
+    replace=>false
+  }
 }
-file {'/etc/wpa_supplicant.conf':
-  source=>'puppet:///files/etc/wpa_supplicant.conf',
-  owner=>root,
-  replace=>false
+class eth0 {
+  file {'/etc/network/interfaces':
+    source=>'puppet:///files/etc/network/interfaces.eth0',
+    group=>root,
+    owner=>root,
+    mode=>0644
+  }
 }
+
 
 package {'sudo': }
 
@@ -251,11 +262,13 @@ node 'noetbook' {
   include laptop
   include ssd
   include firefox
+  include wlan0
 }
 
 node 'lsip' {
   include githost
   include mediaserver
+  include eth0
   file {'/raid': ensure=>directory }
   mount {'/raid':
     require=>File['/raid'],

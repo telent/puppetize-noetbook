@@ -1,0 +1,18 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+iface wlan0 inet manual
+  wpa-driver wext
+  wpa-roam /etc/wpa_supplicant.conf
+
+# these interface names correspond with the 'id_str' settings in
+# wpa_supplicant.conf, so I can tell it about a network that I don't
+# want it to connect to automatically because it's horribly insecure
+# or has an annoying captive portal or whatever other reason
+
+iface default inet dhcp
+iface ignore inet manual
