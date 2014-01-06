@@ -68,7 +68,11 @@ class emacs {
     require=>[Package['xorg-dev'] , File['/usr/local/src/emacs'], Fetch['emacs.tar.xz']],
   }
   package {['libgif-dev', 'libncurses5-dev', 'libjpeg8-dev', 
-            'libpng12-dev', 'libtiff5-dev']: }
+            'libpng12-dev', 'libtiff5-dev']:
+              before=>Exec['emacs:build']
+  }
+}
+
 class xorglibs {
   package {['xorg', 'xorg-dev']: }
 }
@@ -275,6 +279,13 @@ node 'lsip' {
   include githost
   include mediaserver
   include eth0
+  package {'udev':}
+  mount {'/':
+    atboot=>true,
+    device=>'/dev/disk/by-label/ROOT',
+    fstype=>'ext4',
+    ensure=>present
+  }
   file {'/raid': ensure=>directory }
   mount {'/raid':
     require=>File['/raid'],
