@@ -242,6 +242,7 @@ package {['cups',
           'whois',
 	  'irssi',
 	  'nvi',
+          'ifupdown',
 	  'less',
           'rsync',]:
             ensure=>installed
