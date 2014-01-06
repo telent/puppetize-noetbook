@@ -305,6 +305,16 @@ node 'lsip' {
     before=>Package['extlinux','linux-image-amd64']
   } 
     
+  mount {'/home/':
+    require=>Mount['/raid'],
+    ensure=>mounted,
+    atboot=>true,
+    device=>'/raid/loaclhost/home/',
+    fstype=>'none',
+    options=>'bind',
+    before=>User['dan']
+  }
+
   package {'linux-image-amd64': }
   package {'watchdog': }
   service {'watchdog':
