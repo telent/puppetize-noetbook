@@ -199,9 +199,13 @@ class android {
 class dan {
   user {'dan':
     require=>Package['sudo'],
-    groups=>['sudo']
+    groups=>['sudo'],
+    managehome=>true,
+    shell=>'/bin/bash',
+    ensure=>present
   }
   gitrepo { 'dotfiles':
+    require => User['dan'],
     repo=> 'https://github.com/telent/dotfiles',
     parentdirectory=>'/home/dan/',
     username=>'dan'
