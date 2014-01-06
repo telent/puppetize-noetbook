@@ -69,10 +69,13 @@ class emacs {
   }
   package {['libgif-dev', 'libncurses5-dev', 'libjpeg8-dev', 
             'libpng12-dev', 'libtiff5-dev']: }
+class xorglibs {
+  package {['xorg', 'xorg-dev']: }
 }
 
 class xorg {
-  package {['xorg', 'xorg-dev', 'xserver-xorg-video-intel', 'xfce4-session', 'sawfish', 'sawfish-lisp-source', 'lightdm','menu', 'xfce4-power-manager']:}
+  include xorglibs
+  package {['xserver-xorg-video-intel', 'xfce4-session', 'sawfish', 'sawfish-lisp-source', 'lightdm','menu', 'xfce4-power-manager']:}
   service {'lightdm':
     enable=>true
   }
@@ -268,6 +271,7 @@ node 'noetbook' {
 
 node 'lsip' {
   include telent
+  include xorglibs
   include githost
   include mediaserver
   include eth0
