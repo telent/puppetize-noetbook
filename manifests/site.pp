@@ -291,7 +291,8 @@ node 'lsip' {
     require=>File['/raid'],
     ensure=>mounted,
     atboot=>true,
-    device=>'LABEL=RAID',
+    options=>'defaults',
+    device=>'/dev/disk/by-label/RAID',
     fstype=>'ext4'
   }
     
