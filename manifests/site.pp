@@ -244,7 +244,7 @@ class mediaserver {
   package {'mediatomb': }
 }
 
-node default {
+class telent {
   include emacs
   include diagnostic
   include dev
@@ -258,6 +258,7 @@ node default {
 }
 
 node 'noetbook' {
+  include telent
   include xorg
   include laptop
   include ssd
@@ -266,6 +267,7 @@ node 'noetbook' {
 }
 
 node 'lsip' {
+  include telent
   include githost
   include mediaserver
   include eth0
