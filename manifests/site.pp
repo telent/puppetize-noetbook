@@ -316,6 +316,10 @@ node 'lsip' {
   include mediaserver
   include eth0
   package {'udev':}
+  package {'apt-cacher': }
+  file {'/etc/apt-cacher/conf.d/allow_local_net.conf':
+    content=>"# ex puppet\nallowed_hosts = 192.168.0.0/24\n"
+  }
   mount {'/':
     atboot=>true,
     device=>'/dev/disk/by-label/ROOT',
