@@ -324,8 +324,10 @@ node 'lsip' {
     atboot=>true,
     device=>'/dev/disk/by-label/ROOT',
     fstype=>'ext4',
+    options=>'defaults',
     ensure=>present
   }
+  package {'mdadm': }
   file {'/raid': ensure=>directory }
   mount {'/raid':
     require=>File['/raid'],
