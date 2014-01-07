@@ -92,8 +92,9 @@ class xorg {
 }
 
 class diagnostic {
-  package {['lshw','sysstat','powertop','mbr','nmap','wireshark',
-            'xdiskusage', 'iftop']: }
+  package {['lshw', 'sysstat', 'powertop', 'mbr',
+            'nmap', 'wireshark',
+  	    'iputils-ping', 'xdiskusage', 'iftop']: }
 }
 
 class laptop {
