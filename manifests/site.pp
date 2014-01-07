@@ -235,6 +235,7 @@ class clojure {
 }
 
 package {['cups',
+          'man-db', 'manpages',
 	  'tmux',	 
 	  'xtightvncviewer',
           'units',
