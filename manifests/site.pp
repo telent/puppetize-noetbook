@@ -309,6 +309,11 @@ label l0r
   }
 }  
 
+
+class iplayer {
+  package {'get-iplayer': }
+}
+
 class dumbmail($smarthost, $maildomain="telent.net") {
   package { ['msmtp', 'msmtp-mta']: }
   file {'/etc/msmtprc':
@@ -330,6 +335,7 @@ node 'loaclhost' {
   include githost
   include mediaserver
   include eth0
+  include iplayer
   package {'udev':}
   package {'apt-cacher': }
   file {'/etc/apt-cacher/conf.d/allow_local_net.conf':
