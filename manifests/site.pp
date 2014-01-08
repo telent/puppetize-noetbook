@@ -324,7 +324,7 @@ syslog LOG_MAIL
 }
 
 
-node 'lsip' {
+node 'loaclhost' {
   include telent
   include xorglibs
   include githost
