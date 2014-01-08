@@ -309,6 +309,21 @@ label l0r
   }
 }  
 
+class dumbmail($smarthost, $maildomain="telent.net") {
+  package { ['msmtp', 'msmtp-mta']: }
+  file {'/etc/msmtprc':
+    mode=>0644,
+    content=>"# ex puppet
+account default
+host $smarthost
+maildomain $maildomain
+auto_from on
+syslog LOG_MAIL
+"    
+  }
+}
+
+
 node 'lsip' {
   include telent
   include xorglibs
@@ -320,6 +335,10 @@ node 'lsip' {
   file {'/etc/apt-cacher/conf.d/allow_local_net.conf':
     content=>"# ex puppet\nallowed_hosts = 192.168.0.0/24\n"
   }
+  class {'dumbmail':
+    smarthost => 'btyemark.telent.net'
+  }
+  
   mount {'/':
     atboot=>true,
     device=>'/dev/disk/by-label/ROOT',
