@@ -342,6 +342,29 @@ syslog LOG_MAIL
   }
 }
 
+class collectd($listen_addr="192.168.0.2") {
+  package {'collectd': }
+  file {'/etc/collectd/collectd.conf.d/master.conf': 
+    content=>"# PVPPET ME FACIT
+LoadPlugin network
+LoadPlugin unixsock
+<Plugin network>
+    Listen \"$listen_addr\"
+</Plugin>
+<Plugin unixsock>
+       SocketFile \"/var/run/collectd-unixsock\"
+       SocketGroup \"collectd\"
+       SocketPerms \"0660\"
+       DeleteSocket false
+</Plugin>
+"
+  }
+  service {'collectd':
+    subscribe => File['/etc/collectd/collectd.conf.d/master.conf'],
+    require => Package['collectd']
+  }
+}
+
 
 node 'loaclhost' {
   include telent
@@ -349,7 +372,8 @@ node 'loaclhost' {
   include githost
   include mediaserver
   include eth0
-  include iplayer
+  include collectd
+  class {'iplayer': }
   package {'udev':}
   package {'apt-cacher': }
   file {'/etc/apt-cacher/conf.d/allow_local_net.conf':
