@@ -313,9 +313,19 @@ label l0r
   }
 }  
 
-
-class iplayer {
-  package {'get-iplayer': }
+class iplayer($group='media', $directory="/srv/media/video/") {
+  package {['get-iplayer', 'libav-tools']: }
+  user {'iplayer':
+    require=>Group[$group],
+    system=>true,
+    groups=>$group,
+    home=>$directory
+  }
+  cron { iplayer:
+    command=>"get_iplayer --output=$directory --subdir --versions=default --pvr --quiet",
+    user => 'iplayer',
+    minute=>10, hour=>6
+  }
 }
 
 class dumbmail($smarthost, $maildomain="telent.net") {
