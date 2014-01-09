@@ -269,6 +269,10 @@ class telent {
   include android
   include dan
   include clojure
+  group {'media': 
+    system=>true,
+    ensure=>present
+  }
 }
 
 node 'noetbook' {
@@ -385,6 +389,20 @@ node 'loaclhost' {
     fstype=>'none',
     options=>'bind',
     before=>User['dan']
+  }
+
+  mount {'/srv/':
+    require=>Mount['/raid'],
+    ensure=>mounted,
+    atboot=>true,
+    device=>'/raid/big/',
+    fstype=>'none',
+    options=>'bind',
+  }
+
+  file {'/srv/media':
+    mode=>'g+s',
+    group=>'media'
   }
 
   package {'watchdog': }
