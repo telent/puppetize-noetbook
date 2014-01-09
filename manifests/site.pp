@@ -161,7 +161,7 @@ class ruby {
   }
   file { '/etc/profile.d/chruby.sh':
     mode=>0755,
-    content=>"source /usr/local/share/chruby/chruby.sh\n"
+    content=>"# the script this sources doesn't work in plain bourne shell\ntype help >/dev/null 2>&1 && . /usr/local/share/chruby/chruby.sh\n"
   }
   fetch {'ruby-install.tar.gz':
    url => 'https://github.com/postmodern/ruby-install/archive/v0.3.4.tar.gz',
