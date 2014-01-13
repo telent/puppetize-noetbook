@@ -1,6 +1,7 @@
 Exec {
   logoutput=>on_failure
 }
+
 define fetch($url,$cwd) {
   exec{"fetch-$title": 
     command=>"/usr/bin/curl -L \"$url\" -o $name",
@@ -51,7 +52,6 @@ class eth0 {
     mode=>0644
   }
 }
-
 
 package {'sudo': }
 
@@ -349,21 +349,9 @@ syslog LOG_MAIL
 }
 
 class collectd($listen_addr="192.168.0.2") {
-  package {'collectd': }
-  file {'/etc/collectd/collectd.conf.d/master.conf': 
-    content=>"# PVPPET ME FACIT
-LoadPlugin network
-LoadPlugin unixsock
-<Plugin network>
-    Listen \"$listen_addr\"
-</Plugin>
-<Plugin unixsock>
-       SocketFile \"/var/run/collectd-unixsock\"
-       SocketGroup \"collectd\"
-       SocketPerms \"0660\"
-       DeleteSocket false
-</Plugin>
-"
+  package {['collectd', 'librrd-dev']: }
+  file {'/etc/collectd/collectd.conf.d/master.conf':
+    content=>template("etc/collectd/collectd.conf")
   }
   service {'collectd':
     subscribe => File['/etc/collectd/collectd.conf.d/master.conf'],
@@ -403,6 +391,11 @@ node 'loaclhost' {
   include mediaserver
   include eth0
   include collectd
+  package {'lm-sensors': }
+  exec {'coretemp':
+    command=>"/bin/echo coretemp >>/etc/modules",
+    unless=>'/bin/grep coretemp /etc/modules'
+  }		       
   include nfs
   nfs::export {
     "/srv/media":
