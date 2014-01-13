@@ -371,6 +371,30 @@ LoadPlugin unixsock
   }
 }
 
+class nfs {
+  package {'nfs-kernel-server':}
+  file {'/etc/exports.d':
+    ensure=>directory
+  }
+  file {'/etc/exports':
+    content=>"# please use /etc/exports.d\n"
+  }
+  service {'nfs-kernel-server':
+    require => Service['rsyslog'],
+  }
+  exec {'exportfs-a':
+    refreshonly=>true,
+    command=>'/usr/sbin/exportfs -a'
+  }    
+}
+define nfs::export($clients, $options=[]) {
+  $opts = inline_template("<%= @options.join(',') %>")
+  $fname = inline_template("<%= @title.tr('/','_') %>")
+  file { "/etc/exports.d/$fname.exports":
+    content=>"$title $clients($opts)\n",
+    notify=>Exec['exportfs-a']
+  }
+}
 
 node 'loaclhost' {
   include telent
@@ -379,6 +403,17 @@ node 'loaclhost' {
   include mediaserver
   include eth0
   include collectd
+  include nfs
+  nfs::export {
+    "/srv/media":
+      options=>["no_subtree_check","ro"],
+      clients=>"192.168.0.0/24"
+  }
+  nfs::export {
+    "/srv/nfsroot/pi":
+      options=>["no_subtree_check","no_root_squash","rw"],
+      clients=>"192.168.0.137"
+  }
   class {'iplayer': }
   package {'udev':}
   package {'apt-cacher': }
