@@ -236,6 +236,7 @@ class clojure {
 
 package {['cups',
           'man-db', 'manpages',
+          'rsyslog',
 	  'tmux',	 
 	  'xtightvncviewer',
           'units',
@@ -269,6 +270,11 @@ class telent {
   include android
   include dan
   include clojure
+  service {'rsyslog':
+    ensure=>running, enable=>true
+  }
+
+
   group {'media': 
     system=>true,
     ensure=>present
