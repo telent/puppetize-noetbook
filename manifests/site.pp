@@ -93,7 +93,7 @@ class xorg {
 
 class diagnostic {
   package {['lshw', 'sysstat', 'powertop', 'mbr',
-            'nmap', 'wireshark',
+            'nmap', 'wireshark', 'tshark',
   	    'iputils-ping', 'xdiskusage', 'iftop']: }
 }
 
