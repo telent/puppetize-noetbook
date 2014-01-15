@@ -271,6 +271,39 @@ USER=mediatomb
 GROUP=mediatomb
 "
   }
+
+  $zip = 'bubbleupnp.zip'
+  fetch {$zip:
+    url=>'http://www.bubblesoftapps.com/bubbleupnpserver/0.7/BubbleUPnPServer-0.7.zip',
+    cwd=>'/usr/local/tarballs',
+  }
+  file {'/usr/local/lib/bubbleupnp':
+    ensure=>directory
+  }
+  exec {'bubbleupnp:install':
+    cwd=>'/usr/local/lib/bubbleupnp',
+    command=>"/usr/bin/unzip /usr/local/tarballs/$zip",
+    creates=>'/usr/local/lib/bubbleupnp/launch.sh'
+  }
+
+  user {'bubbleupnp':
+    home=>'/usr/local/lib/bubbleupnp/',
+    system=>true
+  }
+
+  service {'bubbleupnp':
+    provider=>base,
+    require=>User['bubbleupnp'],
+    pattern=>'^java.+BubbleUPnPServer.jar$',
+#    ensure=>false, enable=>false,
+    ensure=>running, enable=>true,
+    start=>'/bin/su bubbleupnp /usr/local/lib/bubbleupnp/launch.sh >>/var/log/bubbleupnp.log 2>&1 &',
+    stop=>'/usr/bin/pkill -u bubbleupnp -f  BubbleUPnPServer.jar',
+    status=>'/usr/bin/pgrep -u bubbleupnp -f  BubbleUPnPServer.jar',
+    hasrestart=>false,
+    hasstatus=>false
+  }
+}
 }
 
 class telent {
