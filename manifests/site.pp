@@ -517,7 +517,21 @@ node 'loaclhost' {
     fstype=>'none',
     options=>'bind',
   }
-
+  
+  mount {'swap':
+    name=>'none',
+    atboot=>true,
+    device=>'/dev/disk/by-label/SWAP',
+    fstype=>'swap',
+    options=>'defaults',
+    ensure=>present
+  }
+  exec {'swapon':
+    subscribe=>Mount['swap'],
+    refreshonly=>true,
+    command=>'/sbin/swapon -a'
+  }
+  
   file {'/srv/media':
     mode=>'g+s',
     group=>'media'
