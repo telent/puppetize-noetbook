@@ -295,7 +295,6 @@ GROUP=mediatomb
     provider=>base,
     require=>User['bubbleupnp'],
     pattern=>'^java.+BubbleUPnPServer.jar$',
-#    ensure=>false, enable=>false,
     ensure=>running, enable=>true,
     start=>'/bin/su bubbleupnp /usr/local/lib/bubbleupnp/launch.sh >>/var/log/bubbleupnp.log 2>&1 &',
     stop=>'/usr/bin/pkill -u bubbleupnp -f  BubbleUPnPServer.jar',
