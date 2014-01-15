@@ -255,8 +255,22 @@ class githost {
   file {'/home/git': ensure=>directory}
 }
 
-class mediaserver {
+class mediaserver($directory="/srv/media") {
   package {'mediatomb': }
+  service {'mediatomb':
+    require=>[Package['mediatomb']],
+    subscribe=>[File['/etc/default/mediatomb']],
+    ensure=>running,
+    enable=>true
+  }
+  file {'/etc/default/mediatomb':
+    content=>"#
+NO_START=no
+OPTIONS=\"-a $directory\"
+USER=mediatomb
+GROUP=mediatomb
+"
+  }
 }
 
 class telent {
