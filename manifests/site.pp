@@ -304,6 +304,10 @@ GROUP=mediatomb
     hasstatus=>false
   }
 }
+
+file {'/usr/local/bin/xpathsubst':
+  mode=>0755,
+  source=>'puppet:///files/usr/local/bin/xpathsubst'
 }
 
 class telent {

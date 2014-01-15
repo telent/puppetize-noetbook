@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+require 'rexml/document'
+
+doc = REXML::Document.new(File.read(ARGV.shift))
+Hash[ARGV.each_slice(2).to_a].each do |path, value|
+  doc.elements.each(path) {|el|
+    warn [el.xpath, el.text, value]
+    el.text = value
+  }
+end
+doc.write
