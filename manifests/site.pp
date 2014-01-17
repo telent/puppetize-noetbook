@@ -438,6 +438,10 @@ class exim4($domain, $local_domains) {
   package {['exim4-base','exim4-dev', 'exim4-daemon-heavy',
             'spamassassin']:
   }
+  user {'maildir':
+    system=>true,
+    ensure=>present
+  }
   service {'spamassassin':,
     require=>Package['spamassassin'],
     enable=>false
