@@ -450,6 +450,24 @@ class exim4($domain, $local_domains) {
     content=>template("etc/exim4/exim4.conf")
   }
 }
+
+
+
+node 'sehll' {
+  include xorglibs
+  include emacs
+  include diagnostic
+  include dev
+  include ssh
+  include ruby
+  include dan
+  class {'exim4':
+    local_domains => ['coruskate.net','btyemark.telent.net','firebrox.com'],
+    domain => 'telent.net'
+  }
+  service {'rsyslog': }
+}
+
 node 'loaclhost' {
   include telent
   include xorglibs
