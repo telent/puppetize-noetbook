@@ -234,8 +234,7 @@ class clojure {
   }
 }
 
-package {['cups',
-          'man-db', 'manpages',
+package {['man-db', 'manpages',
           'rsyslog',
 	  'tmux',	 
 	  'xtightvncviewer',
@@ -310,6 +309,7 @@ file {'/usr/local/bin/xpathsubst':
 }
 
 class telent {
+  package {'cups':}
   include emacs
   include diagnostic
   include dev
@@ -484,6 +484,7 @@ node 'sehll' {
   include ssh
   include ruby
   include dan
+
   class {'exim4':
     local_domains => ['coruskate.net','btyemark.telent.net','firebrox.com'],
     domain => 'telent.net'
