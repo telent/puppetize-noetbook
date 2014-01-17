@@ -442,13 +442,19 @@ class exim4($domain, $local_domains) {
     system=>true,
     ensure=>present
   }
+  file {'/etc/default/spamassassin':
+    source=>'puppet:///files/etc/default/spamassassin'
+  }
   service {'spamassassin':,
-    require=>Package['spamassassin'],
-    enable=>false
+    require=>[Package['spamassassin'],
+              File['/etc/default/spamassassin']],
+    ensure=>running,
+    enable=>true
   }
   service {'exim4':
-    require=>File['/etc/exim4/exim4.conf'],
-    enable=>false
+    require=>File['/etc/exim4/exim4.conf','/etc/exim4/passwd'],
+    ensure=>running,
+    enable=>true
   }
   file {'/etc/exim4/exim4.conf':
     content=>template("etc/exim4/exim4.conf")
