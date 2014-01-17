@@ -476,6 +476,15 @@ class exim4($domain, $local_domains) {
   }
 }
 
+class bytemarkdns {
+  file {'/usr/local/etc/dns':
+    ensure=>directory
+  }
+  file {'/usr/local/etc/dns/Makefile':
+    source=>'puppet:///files/usr/local/etc/dns/Makefile'
+  }
+}
+
 node 'sehll' {
   include xorglibs
   include emacs
@@ -484,6 +493,7 @@ node 'sehll' {
   include ssh
   include ruby
   include dan
+  include bytemarkdns
 
   class {'exim4':
     local_domains => ['coruskate.net','btyemark.telent.net','firebrox.com'],
