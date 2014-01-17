@@ -464,6 +464,10 @@ class exim4($domain, $local_domains) {
     owner=>root,
     group=>'Debian-exim'
   }
+  file {'/var/maildir':
+    ensure=>directory, 
+    mode=>0755, owner=>'maildir', group=>'root'
+  }
 }
 
 node 'sehll' {
