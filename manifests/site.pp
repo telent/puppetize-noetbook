@@ -453,9 +453,18 @@ class exim4($domain, $local_domains) {
   file {'/etc/exim4/exim4.conf':
     content=>template("etc/exim4/exim4.conf")
   }
+  exec {'exim4:make_passwd':
+    cwd => '/etc/exim4',
+    command=> '/usr/bin/perl -e \'while(($l,$p,$u)=getpwent()) {($u>=1000) && ($u<32767) && print "$l:$p\n"}\'  > /etc/exim4/passwd',
+    creates => '/etc/exim4/passwd'
+  }
+  file {'/etc/exim4/passwd':
+    require=>Exec['exim4:make_passwd'],
+    mode=>'0440',
+    owner=>root,
+    group=>'Debian-exim'
+  }
 }
-
-
 
 node 'sehll' {
   include xorglibs
