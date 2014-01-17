@@ -480,6 +480,7 @@ node 'sehll' {
   }
   service {'rsyslog': }
 }
+import 'private/*.pp'
 
 node 'loaclhost' {
   include telent
