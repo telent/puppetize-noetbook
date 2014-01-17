@@ -434,6 +434,22 @@ define nfs::export($clients, $options=[]) {
   }
 }
 
+class exim4($domain, $local_domains) {
+  package {['exim4-base','exim4-dev', 'exim4-daemon-heavy',
+            'spamassassin']:
+  }
+  service {'spamassassin':,
+    require=>Package['spamassassin'],
+    enable=>false
+  }
+  service {'exim4':
+    require=>File['/etc/exim4/exim4.conf'],
+    enable=>false
+  }
+  file {'/etc/exim4/exim4.conf':
+    content=>template("etc/exim4/exim4.conf")
+  }
+}
 node 'loaclhost' {
   include telent
   include xorglibs
