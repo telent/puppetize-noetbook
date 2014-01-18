@@ -485,6 +485,19 @@ class bytemarkdns {
   }
 }
 
+class jabber($host,$admin_user) {
+  package {'ejabberd': }
+  file {'/etc/ejabberd/ejabberd.cfg':
+    content=>template("etc/ejabberd/ejabberd.cfg"),
+    owner=>ejabberd,
+    group=>ejabberd,
+    mode=>0400
+  }
+  service {'ejabberd':
+    enable=>true, ensure=>running
+  }
+}
+
 node 'sehll' {
   include xorglibs
   include emacs
@@ -494,6 +507,10 @@ node 'sehll' {
   include ruby
   include dan
   include bytemarkdns
+  class {'jabber':
+    host=>'telent.net',
+    admin_user=>'admin'
+  }
 
   class {'exim4':
     local_domains => ['coruskate.net','btyemark.telent.net','firebrox.com'],
