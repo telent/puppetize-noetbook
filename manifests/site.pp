@@ -322,6 +322,7 @@ class opionatedbasesystem {
   include dev
   include ssh
   include ruby
+  include runit
   include dan
   service {'rsyslog':
     ensure=>running, enable=>true
@@ -350,6 +351,24 @@ node 'noetbook' {
   include firefox
   include wlan0
 }
+
+class runit {
+  package {'runit': }
+}
+define runit::script($script, $log_directory = "/var/log/$name") {
+  file {["/etc/sv/$name","/etc/sv/$name/log"]: ensure=>directory}
+  file {"/etc/sv/$name/run":
+    content=>$script,
+    mode=>0755,
+    owner=>root
+  }
+  file {"/etc/sv/$name/log/run":
+    content=>"#!/bin/sh\nexec svlogd $log_directory\n",
+    mode=>0755,
+    owner=>root
+  }
+}
+
 
 class kernel($version) {
   package {"linux-image-$version": }
@@ -528,19 +547,6 @@ define nginx::reverse_proxy($hostname = $title, $backend_ports, $enable=true) {
   }
 }
 
-define runit::script($script, $log_directory = "/var/log/$name") {
-  file {["/etc/sv/$name","/etc/sv/$name/log"]: ensure=>directory}
-  file {"/etc/sv/$name/run":
-    content=>$script,
-    mode=>0755,
-    owner=>root
-  }
-  file {"/etc/sv/$name/log/run":
-    content=>"#!/bin/sh\nexec svlogd $log_directory\n",
-    mode=>0755,
-    owner=>root
-  }
-}
 
 class my-way {
   nginx::reverse_proxy {'ww.telent.net':
@@ -597,7 +603,6 @@ node 'sehll' {
     domain => 'telent.net'
   }
   service {'rsyslog': }
-  package {'runit': }
 }
 import 'private/*.pp'
 
