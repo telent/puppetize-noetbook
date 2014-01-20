@@ -277,7 +277,14 @@ GROUP=mediatomb
     cwd=>'/usr/local/tarballs',
   }
   file {'/usr/local/lib/bubbleupnp':
-    ensure=>directory
+    require=>Exec['bubbleupnp:install'],
+    ensure=>directory,
+    owner=>'bubbleupnp'
+  }
+  file {'/usr/local/lib/bubbleupnp/configuration.xml':
+    require=>Exec['bubbleupnp:install'],
+    ensure=>present,
+    owner=>'bubbleupnp'
   }
   exec {'bubbleupnp:install':
     cwd=>'/usr/local/lib/bubbleupnp',
