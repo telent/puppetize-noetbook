@@ -494,6 +494,7 @@ class jabber($host,$admin_user) {
     mode=>0400
   }
   service {'ejabberd':
+    hasstatus=>false,
     enable=>true, ensure=>running
   }
 }
