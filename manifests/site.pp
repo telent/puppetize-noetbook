@@ -498,6 +498,24 @@ class jabber($host,$admin_user) {
   }
 }
 
+class nginx {
+  package {'nginx': }
+  service {'nginx':
+    ensure=>running, enable=>true,
+    require=>Package['nginx'] }
+}
+
+define nginx::reverse_proxy($hostname = $title, $backend_ports, $enable=true) {
+  file {"/etc/nginx/sites-available/$hostname":
+    content=>template("etc/nginx/reverse-proxy")
+  }
+  file {"/etc/nginx/sites-enabled/$hostname":
+    ensure => $enable ? { true => 'symlink', false => 'absent' },
+    target => "/etc/nginx/sites-available/$hostname",
+    notify=>Service['nginx']
+  }
+}
+
 node 'sehll' {
   include xorglibs
   include emacs
@@ -512,6 +530,7 @@ node 'sehll' {
     admin_user=>'admin'
   }
 
+  include nginx
   class {'exim4':
     local_domains => ['coruskate.net','btyemark.telent.net','firebrox.com'],
     domain => 'telent.net'

@@ -1,0 +1,8 @@
+server {
+       listen 80;
+       server_name <%= @hostname %>;
+       location / {
+                proxy_pass http://localhost:<%= @backend_ports.first %>;
+                include /etc/nginx/proxy_params;
+       }
+}
