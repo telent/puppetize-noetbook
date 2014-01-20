@@ -636,6 +636,46 @@ node 'sehll' {
 }
 import 'private/*.pp'
 
+class alarum {
+  $dir = '/home/alarum'
+  gitrepo {'alarum':
+    repo=>'https://github.com/telent/alarum.git',
+    parentdirectory=>$dir,
+    username=>'alarum',
+    require=>User['alarum']
+  }
+  user {'alarum':
+    system=>true,
+    ensure=>present,
+    managehome=>true
+  }
+  exec {'alarum:install':
+    refreshonly=>true,
+    subscribe=>Gitrepo['alarum'],
+    cwd => "$dir/alarum",
+    logoutput=>true,
+    timeout=>300,
+    command=>'/bin/su -l alarum -s /bin/bash -c "cd /home/alarum/alarum && chruby jruby && bundle install --deployment && bundle exec warble jar"'
+  }
+  file {'/usr/local/sbin/alarum.jar':
+    require => Exec['alarum:install'],
+    source=>'file:///home/alarum/alarum/alarum.jar'
+  }
+  runit::script {'alarum':
+    script=>'#!/bin/bash
+exec 2>&1
+export LANG=en_GB.UTF-8
+exec chpst -u alarum -v /usr/bin/java -jar /usr/local/sbin/alarum.jar --verbose
+',
+    log_directory=>'/var/log/alarum'
+  }
+  service {'alarum':
+    require=>[Runit::Script['alarum'],File['/usr/local/sbin/alarum.jar']],
+    provider=>runit,
+    ensure=>running, enable=>true
+  }
+}
+
 node 'loaclhost' {
   include telent
   include xorglibs
