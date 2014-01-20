@@ -315,6 +315,24 @@ file {'/usr/local/bin/xpathsubst':
   source=>'puppet:///files/usr/local/bin/xpathsubst'
 }
 
+class rsnapshot($backup_directory) {
+  package {'rsnapshot':
+  }  
+  file {'/var/cache/rsnapshot/':
+    ensure=>symlink,
+    force=>true,
+    target=>'/backup'
+  }
+  cron { 'rsnapshot:hourly':
+    command=>"/usr/bin/rsnaphot hourly",
+    minute=>12, hour=>'*/4'
+  }
+  cron { 'rsnapshot:daily':
+    command=>"/usr/bin/rsnaphot daily",
+    minute=>48, hour=>'3'
+  }
+}
+
 class opinionatedbasesystem {
   include xorglibs
   include emacs
@@ -602,6 +620,16 @@ node 'sehll' {
     local_domains => ['coruskate.net','btyemark.telent.net','firebrox.com'],
     domain => 'telent.net'
   }
+
+  class {'rsnapshot': backup_directory => '/backup' }
+  file {'/backup': ensure=>directory }
+  mount {'/backup':
+    ensure=>mounted,
+    atboot=>true,
+    device=>'/dev/disk/by-label/ARCHIVE',
+    fstype=>'ext2',
+    options=>'defaults',
+  } 
 }
 import 'private/*.pp'
 
