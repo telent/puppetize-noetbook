@@ -385,6 +385,9 @@ define runit::script($script, $log_directory = "/var/log/$name") {
     mode=>0755,
     owner=>root
   }
+  file {$log_directory:
+    ensure=>directory
+  }
 }
 
 
