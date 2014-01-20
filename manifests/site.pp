@@ -385,7 +385,7 @@ class iplayer($group='media', $directory="/srv/media/video/") {
     home=>$directory
   }
   cron { iplayer:
-    command=>"get_iplayer --output=$directory --subdir --versions=default --pvr --quiet",
+    command=>"/bin/sh -c 'ulimit -t 120 && get_iplayer --output=$directory --subdir --versions=default --pvr '",
     user => 'iplayer',
     minute=>10, hour=>6
   }
