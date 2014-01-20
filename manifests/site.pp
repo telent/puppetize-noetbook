@@ -3,7 +3,7 @@ Exec {
 }
 
 define fetch($url,$cwd) {
-  exec{"fetch-$title": 
+  exec{"fetch-$title":
     command=>"/usr/bin/curl -L \"$url\" -o $name",
     cwd=>$cwd,
     require=>[File[$cwd],Package['curl']],
@@ -67,7 +67,7 @@ class emacs {
     creates=>'/usr/local/bin/emacs',
     require=>[Package['xorg-dev'] , File['/usr/local/src/emacs'], Fetch['emacs.tar.xz']],
   }
-  package {['libgif-dev', 'libncurses5-dev', 'libjpeg8-dev', 
+  package {['libgif-dev', 'libncurses5-dev', 'libjpeg8-dev',
             'libpng12-dev', 'libtiff5-dev']:
               before=>Exec['emacs:build']
   }
@@ -137,13 +137,13 @@ class firefox {
     cwd=>'/usr/local/tarballs'
   }
   exec { 'firefox:install':
-    subscribe => Fetch['firefox.tar.bz2'],                     
+    subscribe => Fetch['firefox.tar.bz2'],
     cwd=>'/usr/local/lib/',
     command=>'/bin/tar xf /usr/local/tarballs/firefox.tar.bz2',
     creates=>'/usr/local/lib/firefox/firefox',
   }
   file {'/usr/local/bin/firefox':
-    ensure=>link, 
+    ensure=>link,
     target => '/usr/local/lib/firefox/firefox',
   }
 }
@@ -168,7 +168,7 @@ class ruby {
    cwd => '/usr/local/tarballs',
   }
   exec { 'ruby-install:install':
-    subscribe => Fetch['ruby-install.tar.gz'],      
+    subscribe => Fetch['ruby-install.tar.gz'],
     cwd=>'/usr/local/src/',
     command=>'/bin/tar xzf ../tarballs/ruby-install.tar.gz && make -C ruby-install-0.3.4 install',
     refreshonly=>true,
@@ -236,7 +236,7 @@ class clojure {
 
 package {['man-db', 'manpages',
           'rsyslog',
-	  'tmux',	 
+	  'tmux',
 	  'xtightvncviewer',
           'units',
           #~'xpdf',
@@ -317,7 +317,7 @@ file {'/usr/local/bin/xpathsubst':
 
 class rsnapshot($backup_directory) {
   package {'rsnapshot':
-  }  
+  }
   file {'/var/cache/rsnapshot/':
     ensure=>symlink,
     force=>true,
@@ -355,7 +355,7 @@ class telent {
   include android
   include clojure
 
-  group {'media': 
+  group {'media':
     system=>true,
     ensure=>present
   }
@@ -391,8 +391,8 @@ define runit::script($script, $log_directory = "/var/log/$name") {
 class kernel($version) {
   package {"linux-image-$version": }
   package {'extlinux': }
-  
-  file {'/etc/default/extlinux': 
+
+  file {'/etc/default/extlinux':
     content=>'EXTLINUX_UPDATE="false"
 '
   }
@@ -415,7 +415,7 @@ label l0r
         endtext
  "
   }
-}  
+}
 
 class iplayer($group='media', $directory="/srv/media/video/") {
   package {['get-iplayer', 'libav-tools']: }
@@ -442,7 +442,7 @@ host $smarthost
 maildomain $maildomain
 auto_from on
 syslog LOG_MAIL
-"    
+"
   }
 }
 
@@ -471,7 +471,7 @@ class nfs {
   exec {'exportfs-a':
     refreshonly=>true,
     command=>'/usr/sbin/exportfs -a'
-  }    
+  }
 }
 define nfs::export($clients, $options=[]) {
   $opts = inline_template("<%= @options.join(',') %>")
@@ -519,7 +519,7 @@ class exim4($domain, $local_domains) {
     group=>'Debian-exim'
   }
   file {'/var/maildir':
-    ensure=>directory, 
+    ensure=>directory,
     mode=>0755, owner=>'maildir', group=>'root'
   }
 }
@@ -578,7 +578,7 @@ class my-way {
     require=>User['my-way'],
     repo => '/home/git/my-way.git',
     username => 'my-way',
-    parentdirectory => '/home/my-way/'  
+    parentdirectory => '/home/my-way/'
   }
   exec {'my-way:install':
     refreshonly=>true,
@@ -593,7 +593,7 @@ class my-way {
 exec 2>&1
 cd /home/my-way/my-way
 . /usr/local/share/chruby/chruby.sh
-chruby ruby-2.0.0 
+chruby ruby-2.0.0
 export LANG=en_GB.UTF-8
 exec chpst -u my-way -v bundle exec ruby -I lib bin/my-way.rb
 ',
@@ -615,7 +615,7 @@ node 'sehll' {
   }
   include nginx
   include my-way
-  
+
   class {'exim4':
     local_domains => ['coruskate.net','btyemark.telent.net','firebrox.com'],
     domain => 'telent.net'
@@ -629,7 +629,7 @@ node 'sehll' {
     device=>'/dev/disk/by-label/ARCHIVE',
     fstype=>'ext2',
     options=>'defaults',
-  } 
+  }
 }
 import 'private/*.pp'
 
@@ -644,7 +644,7 @@ node 'loaclhost' {
   exec {'coretemp':
     command=>"/bin/echo coretemp >>/etc/modules",
     unless=>'/bin/grep coretemp /etc/modules'
-  }		       
+  }
   include nfs
   nfs::export {
     "/srv/media":
@@ -665,7 +665,7 @@ node 'loaclhost' {
   class {'dumbmail':
     smarthost => 'sehll.telent.net'
   }
-  
+
   mount {'/':
     atboot=>true,
     device=>'/dev/disk/by-label/ROOT',
@@ -696,8 +696,8 @@ node 'loaclhost' {
     device=>'/dev/disk/by-label/BOOT',
     fstype=>'ext4',
     options=>'defaults',
-  } 
-   
+  }
+
   mount {'/home/':
     require=>Mount['/raid'],
     ensure=>mounted,
@@ -716,7 +716,7 @@ node 'loaclhost' {
     fstype=>'none',
     options=>'bind',
   }
-  
+
   mount {'swap':
     name=>'none',
     atboot=>true,
@@ -730,7 +730,7 @@ node 'loaclhost' {
     refreshonly=>true,
     command=>'/sbin/swapon -a'
   }
-  
+
   file {'/srv/media':
     mode=>'g+s',
     group=>'media'
@@ -740,5 +740,6 @@ node 'loaclhost' {
   service {'watchdog':
     enable=>true, ensure=>running
   }
-    
+
+  include alarum
 }
