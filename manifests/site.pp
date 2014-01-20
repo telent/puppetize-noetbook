@@ -530,6 +530,46 @@ define runit::script($script, $log_directory = "/var/log/$name") {
   }
 }
 
+class my-way {
+  nginx::reverse_proxy {'ww.telent.net':
+    backend_ports=>[4567,4568],
+  }
+  user {'my-way':
+    ensure=>present,
+    managehome=>true
+  }
+  gitrepo {'my-way':
+    require=>User['my-way'],
+    repo => '/home/git/my-way.git',
+    username => 'my-way',
+    parentdirectory => '/home/my-way/'  
+  }
+  exec {'my-way:install':
+    refreshonly=>true,
+    subscribe=>Gitrepo['my-way'],
+    cwd => '/home/my-way/my-way',
+    logoutput=>true,
+    timeout=>120,
+    command=>'/bin/su -l my-way -s /bin/bash -c "cd /home/my-way/my-way && chruby ruby && bundle install --deployment"'
+  }
+  runit::script {'my-way':
+    script=>'#!/bin/bash
+exec 2>&1
+cd /home/my-way/my-way
+. /usr/local/share/chruby/chruby.sh
+chruby ruby-2.0.0 
+export LANG=en_GB.UTF-8
+exec chpst -u my-way -v bundle exec ruby -I lib bin/my-way.rb
+',
+    log_directory=>'/var/log/my-way'
+  }
+  service {'my-way':
+    require=>Runit::Script['my-way'],
+    provider=>runit,
+    enable=>true, ensure=>running
+  }
+}
+
 node 'sehll' {
   include xorglibs
   include emacs
@@ -543,8 +583,9 @@ node 'sehll' {
     host=>'telent.net',
     admin_user=>'admin'
   }
-
   include nginx
+  include my-way
+  
   class {'exim4':
     local_domains => ['coruskate.net','btyemark.telent.net','firebrox.com'],
     domain => 'telent.net'
