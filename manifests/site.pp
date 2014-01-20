@@ -516,6 +516,20 @@ define nginx::reverse_proxy($hostname = $title, $backend_ports, $enable=true) {
   }
 }
 
+define runit::script($script, $log_directory = "/var/log/$name") {
+  file {["/etc/sv/$name","/etc/sv/$name/log"]: ensure=>directory}
+  file {"/etc/sv/$name/run":
+    content=>$script,
+    mode=>0755,
+    owner=>root
+  }
+  file {"/etc/sv/$name/log/run":
+    content=>"#!/bin/sh\nexec svlogd $log_directory\n",
+    mode=>0755,
+    owner=>root
+  }
+}
+
 node 'sehll' {
   include xorglibs
   include emacs
@@ -536,6 +550,7 @@ node 'sehll' {
     domain => 'telent.net'
   }
   service {'rsyslog': }
+  package {'runit': }
 }
 import 'private/*.pp'
 
