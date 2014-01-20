@@ -20,7 +20,7 @@ define gitrepo($repo, $parentdirectory, $username='root', $branch='master') {
     user=>$username,
   }
   exec {"gitrepo/$title/pull":
-    user=>$username,
+#    user=>$username,
     require=>Exec["gitrepo/$title/clone"],
     cwd=>"$parentdirectory/$title",
     command=>"/bin/su -l -c \"cd $parentdirectory/$title ; /usr/bin/git pull \" $username ",
