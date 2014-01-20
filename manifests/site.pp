@@ -636,7 +636,7 @@ node 'loaclhost' {
     content=>"# ex puppet\nallowed_hosts = 192.168.0.0/24\n"
   }
   class {'dumbmail':
-    smarthost => 'btyemark.telent.net'
+    smarthost => 'sehll.telent.net'
   }
   
   mount {'/':
