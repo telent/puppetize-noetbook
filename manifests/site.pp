@@ -602,7 +602,6 @@ node 'sehll' {
     local_domains => ['coruskate.net','btyemark.telent.net','firebrox.com'],
     domain => 'telent.net'
   }
-  service {'rsyslog': }
 }
 import 'private/*.pp'
 
