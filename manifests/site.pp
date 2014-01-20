@@ -315,22 +315,26 @@ file {'/usr/local/bin/xpathsubst':
   source=>'puppet:///files/usr/local/bin/xpathsubst'
 }
 
-class telent {
-  package {'cups':}
+class opionatedbasesystem {
+  include xorglibs
   include emacs
   include diagnostic
   include dev
   include ssh
-  include lxc
   include ruby
-  include media
-  include android
   include dan
-  include clojure
   service {'rsyslog':
     ensure=>running, enable=>true
   }
+}
 
+class telent {
+  package {'cups':}
+  include opionatedbasesystem
+  include lxc
+  include media
+  include android
+  include clojure
 
   group {'media': 
     system=>true,
@@ -579,13 +583,7 @@ exec chpst -u my-way -v bundle exec ruby -I lib bin/my-way.rb
 }
 
 node 'sehll' {
-  include xorglibs
-  include emacs
-  include diagnostic
-  include dev
-  include ssh
-  include ruby
-  include dan
+  include opinionatedbasesystem
   include bytemarkdns
   class {'jabber':
     host=>'telent.net',
