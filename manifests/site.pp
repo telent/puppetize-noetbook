@@ -643,6 +643,7 @@ node 'loaclhost' {
   include mediaserver
   include eth0
   include collectd
+  include nginx
   package {'lm-sensors': }
   exec {'coretemp':
     command=>"/bin/echo coretemp >>/etc/modules",
