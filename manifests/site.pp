@@ -603,6 +603,15 @@ node 'sehll' {
     domain => 'telent.net'
   }
   service {'rsyslog': }
+
+  file {'/backup': ensure=>directory }
+  mount {'/backup':
+    ensure=>mounted,
+    atboot=>true,
+    device=>'/dev/disk/by-label/ARCHIVE',
+    fstype=>'ext2',
+    options=>'defaults',
+  } 
 }
 import 'private/*.pp'
 
