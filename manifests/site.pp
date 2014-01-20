@@ -315,7 +315,7 @@ file {'/usr/local/bin/xpathsubst':
   source=>'puppet:///files/usr/local/bin/xpathsubst'
 }
 
-class opionatedbasesystem {
+class opinionatedbasesystem {
   include xorglibs
   include emacs
   include diagnostic
@@ -331,7 +331,7 @@ class opionatedbasesystem {
 
 class telent {
   package {'cups':}
-  include opionatedbasesystem
+  include opinionatedbasesystem
   include lxc
   include media
   include android
