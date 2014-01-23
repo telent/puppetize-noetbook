@@ -500,7 +500,7 @@ class exim4($domain, $local_domains) {
     enable=>true
   }
   service {'exim4':
-    require=>File['/etc/exim4/exim4.conf','/etc/exim4/passwd'],
+    subscribe=>File['/etc/exim4/exim4.conf','/etc/exim4/passwd'],
     ensure=>running,
     enable=>true
   }
