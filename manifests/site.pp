@@ -28,6 +28,11 @@ define gitrepo($repo, $parentdirectory, $username='root', $branch='master') {
   }
 }
 
+exec {'wordlist':
+  command=>'/usr/sbin/update-default-wordlist'
+  creates=>'/etc/dictionaries-common/words',
+}
+
 file {'/usr/local/tarballs':
   ensure=>directory
 }
