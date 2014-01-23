@@ -554,6 +554,7 @@ class jabber($host,$admin_user) {
     mode=>0400
   }
   service {'ejabberd':
+    subscribe=>File['/etc/ejabberd/ejabberd.cfg'],
     hasstatus=>false,
     enable=>true, ensure=>running
   }
