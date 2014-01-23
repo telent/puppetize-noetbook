@@ -355,6 +355,10 @@ class telent {
   include android
   include clojure
 
+  class {'dumbmail':
+    smarthost => 'sehll.telent.net'
+  }
+
   group {'media': 
     system=>true,
     ensure=>present
@@ -667,9 +671,6 @@ node 'loaclhost' {
   package {'apt-cacher': }
   file {'/etc/apt-cacher/conf.d/allow_local_net.conf':
     content=>"# ex puppet\nallowed_hosts = 192.168.0.0/24\n"
-  }
-  class {'dumbmail':
-    smarthost => 'sehll.telent.net'
   }
   
   mount {'/':
