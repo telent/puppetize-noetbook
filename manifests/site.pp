@@ -446,16 +446,6 @@ class dumbmail($smarthost, $maildomain="telent.net") {
     ensure=>absent
   }
   file {'/etc/msmtprc':
-<<<<<<< HEAD
-    mode=>0644,
-    content=>"# ex puppet
-account default
-host $smarthost
-maildomain $maildomain
-auto_from on
-syslog LOG_MAIL
-"
-=======
     ensure=>absent,
   }
   package {['exim4-base','exim4-daemon-light']: }
@@ -466,7 +456,6 @@ syslog LOG_MAIL
   }
   file {'/etc/exim4/exim4.conf':
     content=>template("etc/exim4/exim4.conf.satellite")
->>>>>>> d9e468a1fc397bc4221aaf30e26fe6ad029fd6c4
   }
 }
 
@@ -721,14 +710,7 @@ node 'loaclhost' {
   file {'/etc/apt-cacher/conf.d/allow_local_net.conf':
     content=>"# ex puppet\nallowed_hosts = 192.168.0.0/24\n"
   }
-<<<<<<< HEAD
-  class {'dumbmail':
-    smarthost => 'sehll.telent.net'
-  }
 
-=======
-  
->>>>>>> d9e468a1fc397bc4221aaf30e26fe6ad029fd6c4
   mount {'/':
     atboot=>true,
     device=>'/dev/disk/by-label/ROOT',
