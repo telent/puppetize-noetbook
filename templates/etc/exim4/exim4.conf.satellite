@@ -9,7 +9,7 @@
 domainlist local_domains = 
 # domains we accept and relay mail for (none)
 domainlist relay_to_domains =
-hostlist   relay_from_hosts = 127.0.0.1
+hostlist   relay_from_hosts = @[]
 
 # The lists above are used in the access control lists for
 # checking incoming messages. The names of these ACLs are defined here:
