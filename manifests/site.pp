@@ -433,16 +433,22 @@ class iplayer($group='media', $directory="/srv/media/video/") {
 }
 
 class dumbmail($smarthost, $maildomain="telent.net") {
-  package { ['msmtp', 'msmtp-mta']: }
+  # We used to use msmtp but it just gave us grief.
+  # Now we use a real mta with a stripped-down relay-only config
+  package { ['msmtp', 'msmtp-mta']: 
+    ensure=>absent
+  }
   file {'/etc/msmtprc':
-    mode=>0644,
-    content=>"# ex puppet
-account default
-host $smarthost
-maildomain $maildomain
-auto_from on
-syslog LOG_MAIL
-"    
+    ensure=>absent,
+  }
+  package {['exim4-base','exim4-daemon-light']: }
+  service {'exim4':
+    subscribe=>File['/etc/exim4/exim4.conf'],
+    ensure=>running,
+    enable=>true
+  }
+  file {'/etc/exim4/exim4.conf':
+    content=>template("etc/exim4/exim4.conf.satellite")
   }
 }
 
