@@ -3,7 +3,7 @@ Exec {
 }
 
 define fetch($url,$cwd) {
-  exec{"fetch-$title": 
+  exec{"fetch-$title":
     command=>"/usr/bin/curl -L \"$url\" -o $name",
     cwd=>$cwd,
     require=>[File[$cwd],Package['curl']],
@@ -67,7 +67,7 @@ class emacs {
     creates=>'/usr/local/bin/emacs',
     require=>[Package['xorg-dev'] , File['/usr/local/src/emacs'], Fetch['emacs.tar.xz']],
   }
-  package {['libgif-dev', 'libncurses5-dev', 'libjpeg8-dev', 
+  package {['libgif-dev', 'libncurses5-dev', 'libjpeg8-dev',
             'libpng12-dev', 'libtiff5-dev']:
               before=>Exec['emacs:build']
   }
@@ -93,7 +93,7 @@ class xorg {
 
 class diagnostic {
   package {['lshw', 'sysstat', 'powertop', 'mbr',
-            'nmap', 'wireshark', 'tshark',
+            'nmap', 'wireshark', 'tshark', 'swaks',
   	    'iputils-ping', 'xdiskusage', 'iftop']: }
 }
 
@@ -137,13 +137,13 @@ class firefox {
     cwd=>'/usr/local/tarballs'
   }
   exec { 'firefox:install':
-    subscribe => Fetch['firefox.tar.bz2'],                     
+    subscribe => Fetch['firefox.tar.bz2'],
     cwd=>'/usr/local/lib/',
     command=>'/bin/tar xf /usr/local/tarballs/firefox.tar.bz2',
     creates=>'/usr/local/lib/firefox/firefox',
   }
   file {'/usr/local/bin/firefox':
-    ensure=>link, 
+    ensure=>link,
     target => '/usr/local/lib/firefox/firefox',
   }
 }
@@ -168,7 +168,7 @@ class ruby {
    cwd => '/usr/local/tarballs',
   }
   exec { 'ruby-install:install':
-    subscribe => Fetch['ruby-install.tar.gz'],      
+    subscribe => Fetch['ruby-install.tar.gz'],
     cwd=>'/usr/local/src/',
     command=>'/bin/tar xzf ../tarballs/ruby-install.tar.gz && make -C ruby-install-0.3.4 install',
     refreshonly=>true,
@@ -236,7 +236,7 @@ class clojure {
 
 package {['man-db', 'manpages',
           'rsyslog',
-	  'tmux',	 
+	  'tmux',
 	  'xtightvncviewer',
           'units',
           #~'xpdf',
@@ -317,7 +317,7 @@ file {'/usr/local/bin/xpathsubst':
 
 class rsnapshot($backup_directory) {
   package {'rsnapshot':
-  }  
+  }
   file {'/var/cache/rsnapshot/':
     ensure=>symlink,
     force=>true,
@@ -355,6 +355,10 @@ class telent {
   include android
   include clojure
 
+  class {'dumbmail':
+    smarthost => 'sehll.telent.net'
+  }
+
   group {'media': 
     system=>true,
     ensure=>present
@@ -385,14 +389,17 @@ define runit::script($script, $log_directory = "/var/log/$name") {
     mode=>0755,
     owner=>root
   }
+  file {$log_directory:
+    ensure=>directory
+  }
 }
 
 
 class kernel($version) {
   package {"linux-image-$version": }
   package {'extlinux': }
-  
-  file {'/etc/default/extlinux': 
+
+  file {'/etc/default/extlinux':
     content=>'EXTLINUX_UPDATE="false"
 '
   }
@@ -415,7 +422,7 @@ label l0r
         endtext
  "
   }
-}  
+}
 
 class iplayer($group='media', $directory="/srv/media/video/") {
   package {['get-iplayer', 'libav-tools']: }
@@ -433,16 +440,22 @@ class iplayer($group='media', $directory="/srv/media/video/") {
 }
 
 class dumbmail($smarthost, $maildomain="telent.net") {
-  package { ['msmtp', 'msmtp-mta']: }
+  # We used to use msmtp but it just gave us grief.
+  # Now we use a real mta with a stripped-down relay-only config
+  package { ['msmtp', 'msmtp-mta']: 
+    ensure=>absent
+  }
   file {'/etc/msmtprc':
-    mode=>0644,
-    content=>"# ex puppet
-account default
-host $smarthost
-maildomain $maildomain
-auto_from on
-syslog LOG_MAIL
-"    
+    ensure=>absent,
+  }
+  package {['exim4-base','exim4-daemon-light']: }
+  service {'exim4':
+    subscribe=>File['/etc/exim4/exim4.conf'],
+    ensure=>running,
+    enable=>true
+  }
+  file {'/etc/exim4/exim4.conf':
+    content=>template("etc/exim4/exim4.conf.satellite")
   }
 }
 
@@ -471,7 +484,7 @@ class nfs {
   exec {'exportfs-a':
     refreshonly=>true,
     command=>'/usr/sbin/exportfs -a'
-  }    
+  }
 }
 define nfs::export($clients, $options=[]) {
   $opts = inline_template("<%= @options.join(',') %>")
@@ -513,7 +526,7 @@ class exim4($domain, $local_domains) {
     group=>'Debian-exim',
   }
   file {'/var/maildir':
-    ensure=>directory, 
+    ensure=>directory,
     mode=>0755, owner=>'maildir', group=>'root'
   }
 }
@@ -572,7 +585,7 @@ class my-way {
     require=>User['my-way'],
     repo => '/home/git/my-way.git',
     username => 'my-way',
-    parentdirectory => '/home/my-way/'  
+    parentdirectory => '/home/my-way/'
   }
   exec {'my-way:install':
     refreshonly=>true,
@@ -587,7 +600,7 @@ class my-way {
 exec 2>&1
 cd /home/my-way/my-way
 . /usr/local/share/chruby/chruby.sh
-chruby ruby-2.0.0 
+chruby ruby-2.0.0
 export LANG=en_GB.UTF-8
 exec chpst -u my-way -v bundle exec ruby -I lib bin/my-way.rb
 ',
@@ -609,7 +622,7 @@ node 'sehll' {
   }
   include nginx
   include my-way
-  
+
   class {'exim4':
     local_domains => ['coruskate.net','btyemark.telent.net','firebrox.com'],
     domain => 'telent.net'
@@ -623,9 +636,49 @@ node 'sehll' {
     device=>'/dev/disk/by-label/ARCHIVE',
     fstype=>'ext2',
     options=>'defaults',
-  } 
+  }
 }
 import 'private/*.pp'
+
+class alarum {
+  $dir = '/home/alarum'
+  gitrepo {'alarum':
+    repo=>'https://github.com/telent/alarum.git',
+    parentdirectory=>$dir,
+    username=>'alarum',
+    require=>User['alarum']
+  }
+  user {'alarum':
+    system=>true,
+    ensure=>present,
+    managehome=>true
+  }
+  exec {'alarum:install':
+    refreshonly=>true,
+    subscribe=>Gitrepo['alarum'],
+    cwd => "$dir/alarum",
+    logoutput=>true,
+    timeout=>300,
+    command=>'/bin/su -l alarum -s /bin/bash -c "cd /home/alarum/alarum && chruby jruby && bundle install --deployment && bundle exec warble jar"'
+  }
+  file {'/usr/local/sbin/alarum.jar':
+    require => Exec['alarum:install'],
+    source=>'file:///home/alarum/alarum/alarum.jar'
+  }
+  runit::script {'alarum':
+    script=>'#!/bin/bash
+exec 2>&1
+export LANG=en_GB.UTF-8
+exec chpst -u alarum -v /usr/bin/java -jar /usr/local/sbin/alarum.jar --verbose
+',
+    log_directory=>'/var/log/alarum'
+  }
+  service {'alarum':
+    require=>[Runit::Script['alarum'],File['/usr/local/sbin/alarum.jar']],
+    provider=>runit,
+    ensure=>running, enable=>true
+  }
+}
 
 node 'loaclhost' {
   include telent
@@ -634,11 +687,12 @@ node 'loaclhost' {
   include mediaserver
   include eth0
   include collectd
+  include nginx
   package {'lm-sensors': }
   exec {'coretemp':
     command=>"/bin/echo coretemp >>/etc/modules",
     unless=>'/bin/grep coretemp /etc/modules'
-  }		       
+  }
   include nfs
   nfs::export {
     "/srv/media":
@@ -656,10 +710,7 @@ node 'loaclhost' {
   file {'/etc/apt-cacher/conf.d/allow_local_net.conf':
     content=>"# ex puppet\nallowed_hosts = 192.168.0.0/24\n"
   }
-  class {'dumbmail':
-    smarthost => 'sehll.telent.net'
-  }
-  
+
   mount {'/':
     atboot=>true,
     device=>'/dev/disk/by-label/ROOT',
@@ -690,8 +741,8 @@ node 'loaclhost' {
     device=>'/dev/disk/by-label/BOOT',
     fstype=>'ext4',
     options=>'defaults',
-  } 
-   
+  }
+
   mount {'/home/':
     require=>Mount['/raid'],
     ensure=>mounted,
@@ -710,7 +761,7 @@ node 'loaclhost' {
     fstype=>'none',
     options=>'bind',
   }
-  
+
   mount {'swap':
     name=>'none',
     atboot=>true,
@@ -724,7 +775,7 @@ node 'loaclhost' {
     refreshonly=>true,
     command=>'/sbin/swapon -a'
   }
-  
+
   file {'/srv/media':
     mode=>'g+s',
     group=>'media'
@@ -734,5 +785,6 @@ node 'loaclhost' {
   service {'watchdog':
     enable=>true, ensure=>running
   }
-    
+
+  include alarum
 }
