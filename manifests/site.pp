@@ -44,9 +44,9 @@ class wlan0 {
     mode=>0644
   }
   file {'/etc/wpa_supplicant.conf':
-    source=>'puppet:///files/etc/wpa_supplicant.conf',
+    content=>decrypt("templates/etc/wpa_supplicant.conf.gpg"),
     owner=>root,
-    replace=>false
+    mode=>0600
   }
 }
 class eth0 {
