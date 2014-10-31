@@ -29,7 +29,7 @@ define gitrepo($repo, $parentdirectory, $username='root', $branch='master') {
 }
 
 exec {'wordlist':
-  command=>'/usr/sbin/update-default-wordlist'
+  command=>'/usr/sbin/update-default-wordlist',
   creates=>'/etc/dictionaries-common/words',
 }
 
@@ -186,6 +186,7 @@ class media {
 }
 
 class android {
+  package {'ant': }
   fetch {'android-sdk.tgz':
     url=>'http://dl.google.com/android/android-sdk_r22.0.5-linux.tgz',
     cwd=>'/usr/local/tarballs'
@@ -355,7 +356,6 @@ class opinionatedbasesystem {
 class telent {
   package {'cups':}
   include opinionatedbasesystem
-  include lxc
   include media
   include android
   include clojure
