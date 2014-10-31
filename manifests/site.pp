@@ -138,7 +138,7 @@ class lxc {
 
 class firefox {
   fetch { 'firefox.tar.bz2':
-    url=> 'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/26.0/linux-x86_64/en-GB/firefox-26.0.tar.bz2',
+    url=> 'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/33.0/linux-x86_64/en-GB/firefox-33.0.tar.bz2',
     cwd=>'/usr/local/tarballs'
   }
   exec { 'firefox:install':
