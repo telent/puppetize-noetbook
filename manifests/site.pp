@@ -138,7 +138,7 @@ class lxc {
 
 class firefox {
   fetch { 'firefox.tar.bz2':
-    url=> 'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/33.0/linux-x86_64/en-GB/firefox-33.0.tar.bz2',
+    url=>'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/35.0.1/linux-x86_64/en-GB/firefox-35.0.1.tar.bz2',
     cwd=>'/usr/local/tarballs'
   }
   exec { 'firefox:install':
@@ -377,6 +377,7 @@ node 'noetbook' {
   include ssd
   include firefox
   include wlan0
+  package {'initramfs-tools': }
 }
 
 class runit {
