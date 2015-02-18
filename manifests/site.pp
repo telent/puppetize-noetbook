@@ -573,41 +573,42 @@ define nginx::reverse_proxy($hostname = $title, $backend_ports, $enable=true) {
 }
 
 
-class my-way {
+class blogs {
   nginx::reverse_proxy {'ww.telent.net':
-    backend_ports=>[4567,4568],
+    backend_ports=>[4567],
+  }
+  nginx::reverse_proxy {'www.coruskate.net':
+    backend_ports=>[4569],
   }
   user {'my-way':
     ensure=>present,
     managehome=>true
   }
-  gitrepo {'my-way':
-    require=>User['my-way'],
-    repo => '/home/git/my-way.git',
-    username => 'my-way',
-    parentdirectory => '/home/my-way/'
-  }
-  exec {'my-way:install':
-    refreshonly=>true,
-    subscribe=>Gitrepo['my-way'],
-    cwd => '/home/my-way/my-way',
-    logoutput=>true,
-    timeout=>120,
-    command=>'/bin/su -l my-way -s /bin/bash -c "cd /home/my-way/my-way && chruby ruby && bundle install --deployment"'
-  }
-  runit::script {'my-way':
-    script=>'#!/bin/bash
+  runit::script {'telent-blog':
+    script=>'#!/bin/sh
 exec 2>&1
-cd /home/my-way/my-way
-. /usr/local/share/chruby/chruby.sh
-chruby ruby-2.0.0
+cd /var/www/blogs/telent.blog
 export LANG=en_GB.UTF-8
-exec chpst -u my-way -v bundle exec ruby -I lib bin/my-way.rb
+exec chpst -u my-way -v java -jar /home/dan/share/yablog.jar conf.edn
 ',
-    log_directory=>'/var/log/my-way'
+    log_directory=>'/var/log/telent-blog'
   }
-  service {'my-way':
-    require=>Runit::Script['my-way'],
+  runit::script {'coruskate-blog':
+    script=>'#!/bin/sh
+exec 2>&1
+cd /var/www/blogs/coruskate.blog
+export LANG=en_GB.UTF-8
+exec chpst -u my-way -v java -jar /home/dan/share/yablog.jar conf.edn
+',
+    log_directory=>'/var/log/coruskate-blog'
+  }
+  service {'telent-blog':
+    require=>Runit::Script['telent-blog'],
+    provider=>runit,
+    enable=>true, ensure=>running
+  }
+  service {'coruskate-blog':
+    require=>Runit::Script['coruskate-blog'],
     provider=>runit,
     enable=>true, ensure=>running
   }
@@ -621,7 +622,7 @@ node 'sehll' {
     admin_user=>'admin'
   }
   include nginx
-  include my-way
+  include blogs
 
   class {'exim4':
     local_domains => ['coruskate.net','btyemark.telent.net','firebrox.com'],
