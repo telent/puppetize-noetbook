@@ -28,6 +28,11 @@ define gitrepo($repo, $parentdirectory, $username='root', $branch='master') {
   }
 }
 
+exec {'wordlist':
+  command=>'/usr/sbin/update-default-wordlist',
+  creates=>'/etc/dictionaries-common/words',
+}
+
 file {'/usr/local/tarballs':
   ensure=>directory
 }
@@ -39,9 +44,9 @@ class wlan0 {
     mode=>0644
   }
   file {'/etc/wpa_supplicant.conf':
-    source=>'puppet:///files/etc/wpa_supplicant.conf',
+    content=>decrypt("templates/etc/wpa_supplicant.conf.gpg"),
     owner=>root,
-    replace=>false
+    mode=>0600
   }
 }
 class eth0 {
@@ -133,7 +138,7 @@ class lxc {
 
 class firefox {
   fetch { 'firefox.tar.bz2':
-    url=> 'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/26.0/linux-x86_64/en-GB/firefox-26.0.tar.bz2',
+    url=>'http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/35.0.1/linux-x86_64/en-GB/firefox-35.0.1.tar.bz2',
     cwd=>'/usr/local/tarballs'
   }
   exec { 'firefox:install':
@@ -181,6 +186,7 @@ class media {
 }
 
 class android {
+  package {'ant': }
   fetch {'android-sdk.tgz':
     url=>'http://dl.google.com/android/android-sdk_r22.0.5-linux.tgz',
     cwd=>'/usr/local/tarballs'
@@ -246,6 +252,7 @@ package {['man-db', 'manpages',
 	  'nvi',
           'ifupdown',
 	  'less',
+	  'ntp',
           'rsync',]:
             ensure=>installed
 }
@@ -345,12 +352,16 @@ class opinionatedbasesystem {
   service {'rsyslog':
     ensure=>running, enable=>true
   }
+  service {'ntp':
+    ensure=>running, enable=>true
+  }
+
+  
 }
 
 class telent {
   package {'cups':}
   include opinionatedbasesystem
-  include lxc
   include media
   include android
   include clojure
@@ -372,6 +383,7 @@ node 'noetbook' {
   include ssd
   include firefox
   include wlan0
+  package {'initramfs-tools': }
 }
 
 class runit {
@@ -549,6 +561,7 @@ class jabber($host,$admin_user) {
     mode=>0400
   }
   service {'ejabberd':
+    subscribe=>File['/etc/ejabberd/ejabberd.cfg'],
     hasstatus=>false,
     enable=>true, ensure=>running
   }
