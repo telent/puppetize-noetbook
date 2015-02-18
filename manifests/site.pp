@@ -252,6 +252,7 @@ package {['man-db', 'manpages',
 	  'nvi',
           'ifupdown',
 	  'less',
+	  'ntp',
           'rsync',]:
             ensure=>installed
 }
@@ -351,6 +352,11 @@ class opinionatedbasesystem {
   service {'rsyslog':
     ensure=>running, enable=>true
   }
+  service {'ntp':
+    ensure=>running, enable=>true
+  }
+
+  
 }
 
 class telent {
