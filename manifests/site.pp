@@ -386,6 +386,12 @@ node 'noetbook' {
   package {'initramfs-tools': }
 }
 
+node 'vritual' {
+  include telent
+  include xorg
+  include firefox
+}
+
 class runit {
   package {'runit': }
 }
