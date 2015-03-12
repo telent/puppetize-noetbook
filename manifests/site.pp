@@ -638,7 +638,7 @@ node 'sehll' {
   include blogs
 
   class {'exim4':
-    local_domains => ['coruskate.net','btyemark.telent.net','firebrox.com'],
+    local_domains => ['coruskate.net','btyemark.telent.net','firebrox.com','riddn.it'],
     domain => 'telent.net'
   }
 
