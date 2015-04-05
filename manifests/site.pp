@@ -574,21 +574,52 @@ class jabber($host,$admin_user) {
 }
 
 class nginx {
-  package {'nginx': }
+  package {'nginx': ensure=>'1.6.2-5'}
   service {'nginx':
     ensure=>running, enable=>true,
     require=>Package['nginx'] }
+}
+
+define nginx::site($hostname = $title, $enable=true) {
+  file {"/etc/nginx/sites-enabled/$hostname":
+    ensure => $enable ? { true => 'symlink', false => 'absent' },
+    target => "/etc/nginx/sites-available/$hostname",
+    notify=>Service['nginx']
+  }
 }
 
 define nginx::reverse_proxy($hostname = $title, $backend_ports, $enable=true) {
   file {"/etc/nginx/sites-available/$hostname":
     content=>template("etc/nginx/reverse-proxy")
   }
-  file {"/etc/nginx/sites-enabled/$hostname":
-    ensure => $enable ? { true => 'symlink', false => 'absent' },
-    target => "/etc/nginx/sites-available/$hostname",
-    notify=>Service['nginx']
+  nginx::site {$hostname: enable=>$enable }
+}
+
+class riddn($hostname="dev.riddn.it", $enable=true, $backend_port=8020) {
+  file {"/etc/nginx/sites-available/$hostname" :
+    content=>template("etc/nginx/riddn")
   }
+  nginx::site {$hostname: enable=>$enable }
+  package {'postgresql-9.4':}
+  service {'postgresql':
+    require => Package['postgresql-9.4'],
+    ensure => running, enable=>true 
+  }
+  user{'riddn':  
+    ensure=>present,
+    managehome=>true
+  }
+  exec {'pg-user':
+    command=>'/usr/bin/createuser riddn',
+    unless=>"/usr/bin/psql -c '\\dg' |grep riddn",
+    user=>'postgres'
+  }
+  exec {'pg-db':
+    command=>'/usr/bin/createdb -O riddn riddn-dev',
+    unless=>"/usr/bin/psql -c '\\l' |grep riddn-dev",
+    user=>'postgres'
+  }
+  include clojure
 }
 
 
@@ -642,6 +673,10 @@ node 'sehll' {
   }
   include nginx
   include blogs
+  include riddn
+  nginx::reverse_proxy {'alep.riddn.it':
+    backend_ports=>[8021],
+  }
 
   class {'exim4':
     local_domains => ['coruskate.net','btyemark.telent.net','firebrox.com','riddn.it'],
